@@ -1,50 +1,30 @@
-// Domain model for a condo project / questionnaire record.
-// NOTE: these fields are a best-guess of the `condo_projects` table. Once we have
-// the real Supabase schema, adjust this type and the mappers in lib/projects.ts.
+// Domain model — matches the real `condo_projects` table in Supabase.
 
-export type Warrantability = "warrantable" | "non_warrantable" | "unknown";
-
-export interface CondoProjectSummary {
-  id: string;
-  condo_id: string | null; // business-facing project ID (distinct from PK)
-  project_name: string;
-  address: string | null;
-  city: string | null;
-  county: string | null;
+export interface CondoProject {
+  id: number;
   state: string | null;
-  zip: string | null;
-  warrantability: Warrantability;
-  blacklisted: boolean;
-  last_updated: string | null; // ISO date of the cached questionnaire
+  county: string | null;
+  project_name: string;
+  zip_code: string | null;
+  budget_expiration: string | null; // ISO date
+  insurance_expiration: string | null; // ISO date
+  questionnaire_expiration: string | null; // ISO date
+  condo_review: string | null; // review status / determination
+  review_date: string | null; // ISO date
+  source_file: string | null;
+  list_refreshed: string | null; // ISO date
+  created_at: string | null;
 }
 
-// Search form mirrors the intake screen: filter fields + a sort selector.
+// Search form mirrors the intake screen, aligned to columns that actually exist.
+// (City was dropped — the table has county, not city.)
 export interface SearchFilters {
-  condo_name?: string;
-  condo_id?: string;
-  city?: string;
+  project_name?: string; // "Condo Name"
+  condo_id?: string; // matches the numeric id
   county?: string;
   state?: string;
-  zip?: string;
+  zip_code?: string;
 }
 
-// "Sorted By" options — Condo ID and County are intentionally NOT sortable.
-export type SortField = "project_name" | "city" | "state" | "zip";
-
-export interface CondoProjectDetail extends CondoProjectSummary {
-  hoa_name: string | null;
-  management_company: string | null;
-  total_units: number | null;
-  units_sold_pct: number | null;
-  owner_occupied_pct: number | null;
-  investor_owned_pct: number | null;
-  single_entity_ownership_pct: number | null;
-  delinquency_pct: number | null; // % of units 60+ days past due on HOA dues
-  reserve_funded_pct: number | null;
-  litigation: boolean | null;
-  litigation_notes: string | null;
-  commercial_space_pct: number | null;
-  master_insurance: boolean | null;
-  questionnaire_source: string | null; // who completed it
-  notes: string | null;
-}
+// "Sorted By" options — only columns that make sense to sort on.
+export type SortField = "project_name" | "state" | "zip_code" | "county";

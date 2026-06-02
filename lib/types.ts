@@ -28,3 +28,20 @@ export interface SearchFilters {
 
 // "Sorted By" options — only columns that make sense to sort on.
 export type SortField = "project_name" | "state" | "zip_code" | "county";
+
+// A row from blacklisted_projects.
+export interface BlacklistEntry {
+  id: number;
+  project_id: string | null;
+  address: string | null;
+  city: string | null;
+  state: string | null;
+  zip: string | null;
+  project_legal_name: string | null;
+  status: string | null;
+  date_text: string | null;
+  scope: string | null;
+}
+
+// A condo project annotated with any blacklist match found for it.
+export type SearchResult = CondoProject & { blacklist: BlacklistEntry | null };

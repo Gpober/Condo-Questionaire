@@ -3,6 +3,7 @@ import { redirect, notFound } from "next/navigation";
 import AuthGuard from "@/components/AuthGuard";
 import TopBar from "@/components/TopBar";
 import { getProject } from "@/lib/projects";
+import { getBlacklistFor } from "@/lib/blacklist";
 import { CondoProject } from "@/lib/types";
 import { reviewTone, isExpired, expiryLabel } from "@/lib/status";
 
@@ -30,6 +31,7 @@ export default async function ProjectPage({
   const p: CondoProject | null = await getProject(params.id);
   if (!p) notFound();
 
+  const blacklist = await getBlacklistFor(p);
   const tone = reviewTone(p.condo_review);
   const badgeCls = tone === "ok" ? "warrantable" : tone === "bad" ? "non_warrantable" : "unknown";
 
@@ -41,12 +43,26 @@ export default async function ProjectPage({
 
         <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 12 }}>
           <h1 style={{ margin: 0 }}>{p.project_name}</h1>
-          <span className={`badge ${badgeCls}`}>{p.condo_review ?? "No review"}</span>
+          {blacklist ? (
+            <span className="badge blacklist">Blacklisted</span>
+          ) : (
+            <span className={`badge ${badgeCls}`}>{p.condo_review ?? "No review"}</span>
+          )}
         </div>
         <p className="muted" style={{ marginTop: 4 }}>
           {[p.county && `${p.county} County`, p.state, p.zip_code].filter(Boolean).join(" · ")}
           {`  ·  Condo ID ${p.id}`}
         </p>
+
+        {blacklist && (
+          <div className="banner danger">
+            ⛔ This project is <strong>blacklisted</strong>
+            {blacklist.status ? ` — ${blacklist.status}` : ""}.
+            {blacklist.scope ? ` ${blacklist.scope}` : ""}
+            {blacklist.date_text ? ` (${blacklist.date_text})` : ""}
+            {blacklist.project_legal_name ? ` · matched legal name: ${blacklist.project_legal_name}` : ""}
+          </div>
+        )}
 
         {isExpired(p.questionnaire_expiration) && (
           <div className="banner danger">

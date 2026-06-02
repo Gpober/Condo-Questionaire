@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { searchAction } from "@/app/actions";
 import { US_STATES } from "@/lib/states";
-import { CondoProject, SearchFilters, SortField } from "@/lib/types";
+import { SearchFilters, SortField, SearchResult } from "@/lib/types";
 import { reviewTone, isExpired } from "@/lib/status";
 
 const SORT_OPTIONS: { value: SortField; label: string }[] = [
@@ -14,7 +14,8 @@ const SORT_OPTIONS: { value: SortField; label: string }[] = [
   { value: "county", label: "County" },
 ];
 
-function ReviewBadge({ p }: { p: CondoProject }) {
+function StatusBadge({ p }: { p: SearchResult }) {
+  if (p.blacklist) return <span className="badge blacklist">Blacklisted</span>;
   const tone = reviewTone(p.condo_review);
   const cls = tone === "ok" ? "warrantable" : tone === "bad" ? "non_warrantable" : "unknown";
   return <span className={`badge ${cls}`}>{p.condo_review ?? "No review"}</span>;
@@ -24,10 +25,10 @@ export default function SearchClient() {
   const router = useRouter();
   const [filters, setFilters] = useState<SearchFilters>({});
   const [sortBy, setSortBy] = useState<SortField>("project_name");
-  const [results, setResults] = useState<CondoProject[] | null>(null);
+  const [results, setResults] = useState<SearchResult[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [selected, setSelected] = useState<CondoProject | null>(null);
+  const [selected, setSelected] = useState<SearchResult | null>(null);
 
   const set = (k: keyof SearchFilters) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
     setFilters((f) => ({ ...f, [k]: e.target.value }));
@@ -127,7 +128,7 @@ export default function SearchClient() {
                       {isExpired(p.questionnaire_expiration) ? "  ·  ⚠ questionnaire expired" : ""}
                     </div>
                   </div>
-                  <ReviewBadge p={p} />
+                  <StatusBadge p={p} />
                 </div>
               ))}
             </>
@@ -145,6 +146,13 @@ export default function SearchClient() {
               <strong>{selected.project_name}</strong>
               {selected.state ? ` (${selected.county ? selected.county + ", " : ""}${selected.state})` : ""}. This counts as one lookup.
             </p>
+            {selected.blacklist && (
+              <div className="banner danger" style={{ marginTop: 8 }}>
+                ⛔ This project is <strong>blacklisted</strong>
+                {selected.blacklist.status ? ` (${selected.blacklist.status})` : ""}.
+                {selected.blacklist.scope ? ` ${selected.blacklist.scope}` : ""}
+              </div>
+            )}
             {isExpired(selected.questionnaire_expiration) && (
               <div className="banner danger" style={{ marginTop: 8 }}>
                 ⚠ The questionnaire for this project expired on {selected.questionnaire_expiration}. The cached copy may not be reusable.

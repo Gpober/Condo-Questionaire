@@ -1,0 +1,51 @@
+import { CondoProject } from "./types";
+
+// Demo data mirroring the real condo_projects columns so the flow runs before
+// Supabase keys are wired in.
+export const MOCK_PROJECTS: CondoProject[] = [
+  {
+    id: 1,
+    state: "CA",
+    county: "San Diego",
+    project_name: "Harbor Point Condominiums",
+    zip_code: "92101",
+    budget_expiration: "2026-12-31",
+    insurance_expiration: "2026-09-30",
+    questionnaire_expiration: "2026-10-12",
+    condo_review: "Eligible",
+    review_date: "2026-04-12",
+    source_file: "harbor_point_2026.pdf",
+    list_refreshed: "2026-05-01",
+    created_at: "2026-04-12T00:00:00Z",
+  },
+  {
+    id: 2,
+    state: "IL",
+    county: "Cook",
+    project_name: "The Madison Lofts",
+    zip_code: "60602",
+    budget_expiration: "2026-06-30",
+    insurance_expiration: "2026-07-15",
+    questionnaire_expiration: "2026-03-01",
+    condo_review: "Ineligible",
+    review_date: "2026-02-15",
+    source_file: "madison_lofts_q1.pdf",
+    list_refreshed: "2026-03-01",
+    created_at: "2026-02-15T00:00:00Z",
+  },
+  {
+    id: 3,
+    state: "TX",
+    county: "Travis",
+    project_name: "Riverside Gardens",
+    zip_code: "78701",
+    budget_expiration: "2025-12-31",
+    insurance_expiration: "2025-11-20",
+    questionnaire_expiration: "2025-11-20",
+    condo_review: "Ineligible - litigation",
+    review_date: "2025-09-20",
+    source_file: "riverside_gardens.pdf",
+    list_refreshed: "2025-11-20",
+    created_at: "2025-09-20T00:00:00Z",
+  },
+];

@@ -1,4 +1,4 @@
-import { isSupabaseConfigured, supabase } from "./supabase";
+import { getServerClient } from "./supabase/server";
 import { BlacklistEntry, CondoProject, SearchResult } from "./types";
 
 // Demo blacklist for when Supabase isn't configured. Flags "Riverside Gardens".
@@ -47,7 +47,8 @@ function matches(project: CondoProject, bl: BlacklistEntry): boolean {
 }
 
 async function fetchBlacklistForStates(states: string[]): Promise<BlacklistEntry[]> {
-  if (isSupabaseConfigured && supabase) {
+  const supabase = getServerClient();
+  if (supabase) {
     let q = supabase.from("blacklisted_projects").select("*");
     if (states.length) q = q.in("state", states);
     const { data, error } = await q;

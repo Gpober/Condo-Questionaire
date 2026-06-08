@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { redirect, notFound } from "next/navigation";
-import AuthGuard from "@/components/AuthGuard";
 import TopBar from "@/components/TopBar";
 import { getProject } from "@/lib/projects";
 import { getBlacklistFor } from "@/lib/blacklist";
@@ -36,8 +35,8 @@ export default async function ProjectPage({
   const badgeCls = tone === "ok" ? "warrantable" : tone === "bad" ? "non_warrantable" : "unknown";
 
   return (
-    <AuthGuard>
-      <TopBar />
+    <>
+      <TopBar showLogout={false} />
       <div className="container">
         <Link href="/search" className="muted">← Back to search</Link>
 
@@ -100,6 +99,6 @@ export default async function ProjectPage({
           </div>
         </div>
       </div>
-    </AuthGuard>
+    </>
   );
 }

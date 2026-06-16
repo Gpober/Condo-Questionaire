@@ -3,8 +3,13 @@ import AccountClient from "@/components/AccountClient";
 import { getBalance } from "@/lib/credits";
 import { CREDIT_PACKS, isStripeConfigured } from "@/lib/stripe/config";
 
-export default async function AccountPage() {
+export default async function AccountPage({
+  searchParams,
+}: {
+  searchParams: { purchase?: string };
+}) {
   const balance = await getBalance();
+  const purchase = searchParams.purchase;
 
   return (
     <>
@@ -14,6 +19,16 @@ export default async function AccountPage() {
         <p className="muted" style={{ marginTop: -8 }}>
           Credits are spent when you open a condo&apos;s cached record (1 credit each).
         </p>
+
+        {purchase === "success" && (
+          <div className="banner demo" style={{ background: "#dcfce7", color: "#166534", borderColor: "#bbf7d0" }}>
+            ✅ Payment received. Your credits will appear within a few seconds — refresh if needed.
+          </div>
+        )}
+        {purchase === "cancel" && (
+          <div className="banner demo">Checkout canceled — no charge was made.</div>
+        )}
+
         <AccountClient
           balance={balance}
           packs={CREDIT_PACKS}

@@ -85,15 +85,25 @@ is free.
   signup trigger). It also includes a temporary `grant_test_credits` helper —
   **remove it before real launch.**
 - Buy credits on `/account` (3 packs in `lib/stripe/config.ts`).
-- **Stripe is stubbed** until configured. To go live:
-  - Set server env vars `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET`
-    (NOT `NEXT_PUBLIC`), plus `SUPABASE_SERVICE_ROLE_KEY` for the webhook.
-  - Create the credit-pack products in Stripe and add their `priceId`s.
-  - Implement the Checkout session in `app/actions/credits.ts` and the
-    `checkout.session.completed` handler in `app/api/stripe/webhook/route.ts`.
+- **Stripe Checkout is implemented.** Packs are sold via dynamic `price_data`,
+  so no pre-created Stripe Price IDs are required — just edit the packs.
 
-While Stripe is stubbed, use the **“+5 test credits”** button on `/account` to
-exercise the flow.
+### Going live with Stripe
+1. Create a Stripe account (test mode first).
+2. Set these **server-only** env vars (never `NEXT_PUBLIC`):
+   - `STRIPE_SECRET_KEY`
+   - `STRIPE_WEBHOOK_SECRET`
+   - `SUPABASE_SERVICE_ROLE_KEY` (lets the webhook credit users)
+   - optional `NEXT_PUBLIC_SITE_URL` (otherwise auto-detected from request)
+3. Add a webhook endpoint in Stripe pointing to `/api/stripe/webhook`,
+   subscribed to `checkout.session.completed`. Copy its signing secret into
+   `STRIPE_WEBHOOK_SECRET`.
+
+Flow: `/account` → Buy → Stripe Checkout → on success the webhook calls the
+`add_credits` RPC (service role) to top up the user's balance.
+
+Until `STRIPE_SECRET_KEY` is set, the **“+5 test credits”** button on `/account`
+lets you exercise the credit flow without paying.
 
 ## Not yet built (next steps)
 

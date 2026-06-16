@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { getBrowserClient } from "@/lib/supabase/client";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import TopBar from "@/components/TopBar";
@@ -9,7 +9,17 @@ import TopBar from "@/components/TopBar";
 type Mode = "signin" | "signup";
 
 export default function LoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <LoginForm />
+    </Suspense>
+  );
+}
+
+function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const next = searchParams.get("next") || "/search";
   const [mode, setMode] = useState<Mode>("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -29,7 +39,7 @@ export default function LoginPage() {
       if (!supabase) {
         if (!email || !password) throw new Error("Enter an email and password.");
         localStorage.setItem("cq_auth", "1");
-        router.replace("/search");
+        router.replace(next);
         router.refresh();
         return;
       }
@@ -48,7 +58,7 @@ export default function LoginPage() {
         if (error) throw error;
       }
 
-      router.replace("/search");
+      router.replace(next);
       router.refresh();
     } catch (err: any) {
       setError(err.message ?? "Authentication failed.");

@@ -2,9 +2,8 @@ import { type NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from "@/lib/supabase/config";
 
-// Login is temporarily NOT required (app isn't live yet). To re-enable auth,
-// restore: const PROTECTED = ["/search", "/project"];
-const PROTECTED: string[] = [];
+// Search is public; viewing a record and managing credits require login.
+const PROTECTED: string[] = ["/project", "/account"];
 
 export async function middleware(req: NextRequest) {
   const url = SUPABASE_URL;
@@ -41,6 +40,8 @@ export async function middleware(req: NextRequest) {
   if (isProtected && !user) {
     const redirectUrl = req.nextUrl.clone();
     redirectUrl.pathname = "/login";
+    redirectUrl.search = "";
+    redirectUrl.searchParams.set("next", path);
     return NextResponse.redirect(redirectUrl);
   }
 

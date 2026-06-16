@@ -16,9 +16,9 @@ export interface CreditPack {
 }
 
 export const CREDIT_PACKS: CreditPack[] = [
-  { id: "starter", label: "Starter", credits: 10, price: 2500 },
-  { id: "pro", label: "Pro", credits: 50, price: 10000 },
-  { id: "team", label: "Team", credits: 200, price: 35000 },
+  { id: "single", label: "Single", credits: 1, price: 2000 },
+  { id: "popular", label: "Popular", credits: 3, price: 5000 },
+  { id: "value", label: "Best value", credits: 8, price: 10000 },
 ];
 
 export const formatUSD = (cents: number) =>

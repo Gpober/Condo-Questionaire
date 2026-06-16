@@ -2,12 +2,19 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { getBrowserClient } from "@/lib/supabase/client";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 
+const TABS = [
+  { href: "/", label: "Home" },
+  { href: "/search", label: "Search" },
+  { href: "/#pricing", label: "Pricing" },
+];
+
 export default function TopBar({ showLogout = true }: { showLogout?: boolean }) {
   const router = useRouter();
+  const pathname = usePathname();
   const [signedIn, setSignedIn] = useState<boolean | null>(null);
 
   useEffect(() => {
@@ -27,28 +34,42 @@ export default function TopBar({ showLogout = true }: { showLogout?: boolean }) 
     const supabase = getBrowserClient();
     if (supabase) await supabase.auth.signOut();
     else localStorage.removeItem("cq_auth");
-    router.replace("/search");
+    router.replace("/");
     router.refresh();
   }
 
+  const isActive = (href: string) =>
+    href === "/" ? pathname === "/" : pathname.startsWith(href.replace(/#.*$/, "")) && href !== "/#pricing";
+
   return (
-    <div className="topbar">
-      <Link href="/search" className="brand" style={{ color: "#fff" }}>
-        Condo<span>Questionnaire</span> Hub
+    <nav className="nav">
+      <Link href="/" className="brand">
+        <span className="logo" />
+        Condo<span>Q</span>&nbsp;Hub
       </Link>
 
+      <div className="tabs">
+        {TABS.map((t) => (
+          <Link key={t.href} href={t.href} className={`tab ${isActive(t.href) ? "active" : ""}`}>
+            {t.label}
+          </Link>
+        ))}
+      </div>
+
+      <div className="spacer" />
+
       {showLogout && (
-        <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+        <div className="actions">
           {signedIn ? (
             <>
-              <Link href="/account" className="btn secondary">Account</Link>
+              <Link href="/account" className="tab">Account</Link>
               <button className="btn secondary" onClick={signOut}>Sign out</button>
             </>
           ) : signedIn === false ? (
-            <Link href="/login" className="btn secondary">Sign in</Link>
+            <Link href="/login" className="btn">Sign in</Link>
           ) : null}
         </div>
       )}
-    </div>
+    </nav>
   );
 }

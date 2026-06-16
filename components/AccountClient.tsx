@@ -56,19 +56,20 @@ export default function AccountClient({
 
       {error && <div className="banner danger" style={{ marginBottom: 16 }}>{error}</div>}
 
-      <h3>Buy credits</h3>
-      <div className="kv" style={{ gridTemplateColumns: "1fr 1fr 1fr" }}>
-        {packs.map((pack) => (
-          <div key={pack.id} className="card">
-            <div style={{ fontWeight: 700, fontSize: 18 }}>{pack.label}</div>
-            <div className="muted" style={{ margin: "4px 0 12px" }}>
-              {pack.credits} credits · {formatUSD(pack.price)}
-            </div>
+      <h3 style={{ marginBottom: 16 }}>Buy credits</h3>
+      <div className="price-grid">
+        {packs.map((pack, i) => (
+          <div key={pack.id} className={`price-card ${i === packs.length - 1 ? "featured" : ""}`}>
+            {i === packs.length - 1 && <div className="tag">Best value</div>}
+            <div className="muted" style={{ fontWeight: 700 }}>{pack.label}</div>
+            <div className="amt">{formatUSD(pack.price)}</div>
+            <div className="per">{formatUSD(Math.round(pack.price / pack.credits))} per credit</div>
+            <div className="credits">{pack.credits} credit{pack.credits === 1 ? "" : "s"}</div>
             <button
               className="btn"
               onClick={() => buy(pack.id)}
               disabled={busy !== null}
-              style={{ width: "100%", justifyContent: "center" }}
+              style={{ width: "100%" }}
             >
               {busy === pack.id ? "…" : "Buy"}
             </button>

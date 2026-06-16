@@ -120,6 +120,7 @@ export default function SearchClient() {
                       {`  ·  ID ${p.id}`}
                     </div>
                   </div>
+                  <span className="chev">→</span>
                 </div>
               ))}
             </>

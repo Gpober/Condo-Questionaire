@@ -1,44 +1,55 @@
 import { getServerClient } from "./supabase/server";
 import { MOCK_PROJECTS } from "./mockData";
-import { CondoProject, SearchFilters, SortField } from "./types";
+import { CondoProject, CondoSummary, SearchFilters, SortField } from "./types";
 
 const hasAnyFilter = (f: SearchFilters): boolean =>
   Object.values(f).some((v) => v && String(v).trim() !== "");
 
 // PostgREST caps each response (default 1000 rows), so we page through with
-// .range() to return EVERY matching row, not just the first page.
+// .range() to return EVERY matching row.
 const PAGE_SIZE = 1000;
 
-// Lightweight search across cached projects using the multi-field intake form.
+const toSummary = (p: CondoProject): CondoSummary => ({
+  id: p.id,
+  project_name: p.project_name,
+  county: p.county,
+  state: p.state,
+  zip_code: p.zip_code,
+});
+
+function rpcArgs(filters: SearchFilters) {
+  const clean = (v?: string) => (v && v.trim() !== "" ? v.trim() : null);
+  const idStr = filters.condo_id?.trim();
+  return {
+    p_state: clean(filters.state),
+    p_county: clean(filters.county),
+    p_project_name: clean(filters.project_name),
+    p_zip: clean(filters.zip_code),
+    p_condo_id: idStr && /^\d+$/.test(idStr) ? Number(idStr) : null,
+  };
+}
+
+// Public search — returns SUMMARY rows only, via the security-definer RPC.
 export async function searchProjects(
   filters: SearchFilters,
   sortBy: SortField = "project_name"
-): Promise<CondoProject[]> {
+): Promise<CondoSummary[]> {
   if (!hasAnyFilter(filters)) return [];
 
   const supabase = getServerClient();
   if (supabase) {
-    // Rebuild the filtered query each page (a builder can't be reused once awaited).
-    const buildQuery = () => {
-      let q = supabase.from("condo_projects").select("*");
-      if (filters.project_name) q = q.ilike("project_name", `%${filters.project_name}%`);
-      if (filters.county) q = q.ilike("county", `%${filters.county}%`);
-      if (filters.state) q = q.eq("state", filters.state);
-      if (filters.zip_code) q = q.ilike("zip_code", `%${filters.zip_code}%`);
-      if (filters.condo_id && /^\d+$/.test(filters.condo_id.trim())) {
-        q = q.eq("id", Number(filters.condo_id.trim()));
-      }
-      // Stable, deterministic ordering across pages (id breaks ties).
-      return q.order(sortBy, { ascending: true }).order("id", { ascending: true });
-    };
-
-    const all: CondoProject[] = [];
+    const args = rpcArgs(filters);
+    const all: CondoSummary[] = [];
     for (let from = 0; ; from += PAGE_SIZE) {
-      const { data, error } = await buildQuery().range(from, from + PAGE_SIZE - 1);
+      const { data, error } = await supabase
+        .rpc("search_condos", args)
+        .order(sortBy, { ascending: true })
+        .order("id", { ascending: true })
+        .range(from, from + PAGE_SIZE - 1);
       if (error) throw error;
-      const rows = (data ?? []) as CondoProject[];
+      const rows = (data ?? []) as CondoSummary[];
       all.push(...rows);
-      if (rows.length < PAGE_SIZE) break; // last page reached
+      if (rows.length < PAGE_SIZE) break;
     }
     return all;
   }
@@ -46,39 +57,56 @@ export async function searchProjects(
   // DEMO mode — filter the mock set in memory.
   const match = (value: string | null, needle?: string) =>
     !needle || (value ?? "").toLowerCase().includes(needle.toLowerCase());
-
-  const results = MOCK_PROJECTS.filter(
+  return MOCK_PROJECTS.filter(
     (p) =>
       match(p.project_name, filters.project_name) &&
       match(p.county, filters.county) &&
       (!filters.state || p.state === filters.state) &&
       match(p.zip_code, filters.zip_code) &&
       (!filters.condo_id || String(p.id) === filters.condo_id.trim())
-  );
-
-  return results.sort((a, b) =>
-    String(a[sortBy] ?? "").localeCompare(String(b[sortBy] ?? ""))
-  );
+  )
+    .map(toSummary)
+    .sort((a, b) => String(a[sortBy] ?? "").localeCompare(String(b[sortBy] ?? "")));
 }
 
-// Full record. In production this is the billable "lookup" — call AFTER the
-// user confirms, and record the spend for the audit trail.
+// Summary for one project (non-sensitive) — used for the paywall header so we
+// can show the name without revealing the paid record.
+export async function getCondoSummary(id: string): Promise<CondoSummary | null> {
+  const supabase = getServerClient();
+  if (supabase) {
+    const { data, error } = await supabase
+      .rpc("search_condos", {
+        p_state: null,
+        p_county: null,
+        p_project_name: null,
+        p_zip: null,
+        p_condo_id: Number(id),
+      })
+      .limit(1);
+    if (error) {
+      console.error("getCondoSummary failed:", error.message);
+      return null;
+    }
+    const rows = (data ?? []) as CondoSummary[];
+    return rows[0] ?? null;
+  }
+  const p = MOCK_PROJECTS.find((m) => String(m.id) === id);
+  return p ? toSummary(p) : null;
+}
+
+// FULL record — only returns data if the signed-in user has unlocked (paid for)
+// this project, enforced inside the get_unlocked_project RPC.
 export async function getProject(id: string): Promise<CondoProject | null> {
   const supabase = getServerClient();
   if (supabase) {
     const { data, error } = await supabase
-      .from("condo_projects")
-      .select("*")
-      .eq("id", Number(id))
+      .rpc("get_unlocked_project", { p_project_id: Number(id) })
       .maybeSingle();
     if (error) {
-      // Don't crash the page — log and treat as "not found". A common cause is
-      // RLS blocking the anon role (login is disabled). See README.
       console.error("getProject query failed:", error.message);
       return null;
     }
     return (data ?? null) as CondoProject | null;
   }
-
   return MOCK_PROJECTS.find((p) => String(p.id) === id) ?? null;
 }

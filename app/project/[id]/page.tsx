@@ -2,9 +2,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import TopBar from "@/components/TopBar";
 import Paywall from "@/components/Paywall";
-import { getProject } from "@/lib/projects";
+import { getProject, getCondoSummary } from "@/lib/projects";
 import { getBlacklistFor } from "@/lib/blacklist";
-import { isUnlocked, getBalance } from "@/lib/credits";
+import { getBalance } from "@/lib/credits";
 import { CondoProject } from "@/lib/types";
 import { reviewTone, isExpired, expiryLabel } from "@/lib/status";
 
@@ -22,22 +22,24 @@ export default async function ProjectPage({
 }: {
   params: { id: string };
 }) {
-  const p: CondoProject | null = await getProject(params.id);
-  if (!p) notFound();
+  // Non-sensitive summary (for the name) is always available; the full record
+  // is only returned by getProject() if the user has paid to unlock it.
+  const summary = await getCondoSummary(params.id);
+  if (!summary) notFound();
 
-  // Paywall: the cached record costs 1 credit. Middleware already ensures the
-  // user is signed in for /project routes; here we check whether they've
-  // unlocked this specific project.
-  const unlocked = await isUnlocked(params.id);
-  if (!unlocked) {
+  const p: CondoProject | null = await getProject(params.id);
+
+  // Paywall: getProject returns null until the user spends a credit to unlock.
+  // Middleware already ensures the user is signed in for /project routes.
+  if (!p) {
     const balance = await getBalance();
     return (
       <>
         <TopBar />
         <div className="container">
           <Link href="/search" className="muted">← Back to search</Link>
-          <h1 style={{ marginTop: 12 }}>{p.project_name}</h1>
-          <Paywall projectId={params.id} projectName={p.project_name} balance={balance} />
+          <h1 style={{ marginTop: 12 }}>{summary.project_name}</h1>
+          <Paywall projectId={params.id} projectName={summary.project_name} balance={balance} />
         </div>
       </>
     );

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { searchAction } from "@/app/actions";
 import { US_STATES } from "@/lib/states";
-import { SearchFilters, SortField, SearchResult } from "@/lib/types";
+import { SearchFilters, SortField, CondoSummary } from "@/lib/types";
 
 const SORT_OPTIONS: { value: SortField; label: string }[] = [
   { value: "project_name", label: "Condo Name" },
@@ -17,10 +17,10 @@ export default function SearchClient() {
   const router = useRouter();
   const [filters, setFilters] = useState<SearchFilters>({});
   const [sortBy, setSortBy] = useState<SortField>("project_name");
-  const [results, setResults] = useState<SearchResult[] | null>(null);
+  const [results, setResults] = useState<CondoSummary[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [selected, setSelected] = useState<SearchResult | null>(null);
+  const [selected, setSelected] = useState<CondoSummary | null>(null);
 
   const set = (k: keyof SearchFilters) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
     setFilters((f) => ({ ...f, [k]: e.target.value }));

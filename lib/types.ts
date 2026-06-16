@@ -29,6 +29,16 @@ export interface SearchFilters {
 // "Sorted By" options — only columns that make sense to sort on.
 export type SortField = "project_name" | "state" | "zip_code" | "county";
 
+// Non-sensitive summary returned by the public search RPC. The paid fields
+// (condo_review, expirations, etc.) are intentionally NOT included here.
+export interface CondoSummary {
+  id: number;
+  project_name: string;
+  county: string | null;
+  state: string | null;
+  zip_code: string | null;
+}
+
 // A row from blacklisted_projects.
 export interface BlacklistEntry {
   id: number;

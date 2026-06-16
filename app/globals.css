@@ -9,7 +9,7 @@
   /* Ink & surfaces */
   --ink: #0b1324;
   --text: #0f172a;
-  --muted: #64748b;
+  --muted: #475569;
   --border: #e6eaf0;
   --panel: #ffffff;
   --bg: #f6f8fb;
@@ -232,12 +232,12 @@ input:focus, select:focus {
   background: linear-gradient(135deg, var(--brand-start), var(--brand-end));
   -webkit-background-clip: text; background-clip: text; color: transparent;
 }
-.hero p.lede { font-size: 18px; color: var(--muted); max-width: 620px; margin: 0 auto 28px; }
+.hero p.lede { font-size: 20px; line-height: 1.5; color: #334155; font-weight: 500; max-width: 640px; margin: 0 auto 28px; }
 .hero .cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
 
 .section { max-width: 1000px; margin: 0 auto; padding: 28px 20px; }
 .section h2 { font-size: 28px; text-align: center; margin: 0 0 8px; }
-.section .sub { text-align: center; color: var(--muted); margin: 0 0 30px; }
+.section .sub { text-align: center; color: #475569; font-size: 16.5px; font-weight: 500; margin: 0 0 30px; }
 
 .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
 .feature { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 22px; box-shadow: var(--shadow-sm); }
@@ -247,7 +247,7 @@ input:focus, select:focus {
   background: var(--brand-tint);
 }
 .feature h3 { margin: 0 0 6px; font-size: 17px; }
-.feature p { margin: 0; color: var(--muted); font-size: 14.5px; line-height: 1.5; }
+.feature p { margin: 0; color: #475569; font-size: 15.5px; font-weight: 500; line-height: 1.55; }
 
 .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
 .step { text-align: center; padding: 10px; }

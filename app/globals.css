@@ -215,9 +215,12 @@ input:focus, select:focus {
 }
 .hero .eyebrow {
   display: inline-block;
-  padding: 6px 14px; border-radius: 999px;
-  background: var(--brand-tint); color: var(--brand-dark);
-  font-weight: 700; font-size: 13px; margin-bottom: 18px;
+  padding: 12px 26px; border-radius: 999px;
+  background: linear-gradient(135deg, var(--brand-start), var(--brand-end));
+  color: #fff;
+  font-weight: 800; font-size: clamp(18px, 2.4vw, 24px);
+  letter-spacing: 0.2px; margin-bottom: 24px;
+  box-shadow: var(--shadow-md);
 }
 .hero h1 {
   font-size: clamp(34px, 5.5vw, 56px);

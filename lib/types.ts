@@ -55,3 +55,18 @@ export interface BlacklistEntry {
 
 // A condo project annotated with any blacklist match found for it.
 export type SearchResult = CondoProject & { blacklist: BlacklistEntry | null };
+
+// A "What's Next" lead, with its CRM status.
+export type LeadStatus = "new" | "contacted" | "qualified" | "converted" | "closed";
+
+export interface Lead {
+  id: number;
+  full_name: string;
+  email: string;
+  phone: string | null;
+  project_name: string | null;
+  state: string | null;
+  notes: string | null;
+  status: LeadStatus;
+  created_at: string;
+}

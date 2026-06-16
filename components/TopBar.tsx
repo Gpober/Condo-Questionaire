@@ -17,6 +17,7 @@ export default function TopBar({ showLogout = true }: { showLogout?: boolean }) 
   const router = useRouter();
   const pathname = usePathname();
   const [signedIn, setSignedIn] = useState<boolean | null>(null);
+  const [admin, setAdmin] = useState(false);
 
   useEffect(() => {
     if (!isSupabaseConfigured) {
@@ -24,10 +25,19 @@ export default function TopBar({ showLogout = true }: { showLogout?: boolean }) 
       return;
     }
     const supabase = getBrowserClient()!;
-    supabase.auth.getSession().then(({ data }) => setSignedIn(Boolean(data.session)));
-    const { data: sub } = supabase.auth.onAuthStateChange((_e, session) =>
-      setSignedIn(Boolean(session))
-    );
+    const checkAdmin = async () => {
+      const { data } = await supabase.rpc("is_admin");
+      setAdmin(Boolean(data));
+    };
+    supabase.auth.getSession().then(({ data }) => {
+      setSignedIn(Boolean(data.session));
+      if (data.session) checkAdmin();
+    });
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
+      setSignedIn(Boolean(session));
+      if (session) checkAdmin();
+      else setAdmin(false);
+    });
     return () => sub.subscription.unsubscribe();
   }, []);
 
@@ -63,6 +73,7 @@ export default function TopBar({ showLogout = true }: { showLogout?: boolean }) 
         <div className="actions">
           {signedIn ? (
             <>
+              {admin && <Link href="/admin" className="tab">Admin</Link>}
               <Link href="/account" className="tab">Account</Link>
               <button className="btn secondary" onClick={signOut}>Sign out</button>
             </>

@@ -3,7 +3,7 @@ import { createServerClient } from "@supabase/ssr";
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from "@/lib/supabase/config";
 
 // Search is public; viewing a record and managing credits require login.
-const PROTECTED: string[] = ["/project", "/account"];
+const PROTECTED: string[] = ["/project", "/account", "/admin"];
 
 export async function middleware(req: NextRequest) {
   const url = SUPABASE_URL;

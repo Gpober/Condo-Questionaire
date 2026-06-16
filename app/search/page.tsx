@@ -4,7 +4,7 @@ import SearchClient from "@/components/SearchClient";
 export default function SearchPage() {
   return (
     <>
-      <TopBar showLogout={false} />
+      <TopBar />
       <div className="container">
         <h1 style={{ marginTop: 0 }}>Find a condo project</h1>
         <p className="muted" style={{ marginTop: -8 }}>

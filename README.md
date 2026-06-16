@@ -74,9 +74,29 @@ In demo mode (no keys) any email/password is accepted.
 - Add **RLS policies** to `condo_projects` / `blacklisted_projects` so only
   authenticated users can read (the app already queries as the user).
 
+## Credits & payments (paywall)
+
+Searching is **free and public**. Opening a condo's cached record costs **1
+credit** and requires a signed-in user. Viewing a record you've already unlocked
+is free.
+
+- DB: run `supabase/credits-setup.sql` (profiles + balance, lookups/unlocks,
+  atomic `redeem_credit` RPC, `add_credits` for the webhook, RLS, and a
+  signup trigger). It also includes a temporary `grant_test_credits` helper —
+  **remove it before real launch.**
+- Buy credits on `/account` (3 packs in `lib/stripe/config.ts`).
+- **Stripe is stubbed** until configured. To go live:
+  - Set server env vars `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET`
+    (NOT `NEXT_PUBLIC`), plus `SUPABASE_SERVICE_ROLE_KEY` for the webhook.
+  - Create the credit-pack products in Stripe and add their `priceId`s.
+  - Implement the Checkout session in `app/actions/credits.ts` and the
+    `checkout.session.completed` handler in `app/api/stripe/webhook/route.ts`.
+
+While Stripe is stubbed, use the **“+5 test credits”** button on `/account` to
+exercise the flow.
+
 ## Not yet built (next steps)
 
-- **Roles** (internal staff vs external customers) — e.g. a `profiles` table or
-  user metadata, then RLS/UI gating per role.
-- Recording each confirmed lookup for the audit trail / billing.
+- Real Stripe Checkout + webhook (scaffolded, see above).
+- **Roles** (internal staff vs external customers).
 - `condo_projects_legacy` integration and `dpa_programs` matching.

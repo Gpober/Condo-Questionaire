@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { searchAction } from "@/app/actions";
 import { US_STATES } from "@/lib/states";
 import { SearchFilters, SortField, SearchResult } from "@/lib/types";
-import { isExpired } from "@/lib/status";
 
 const SORT_OPTIONS: { value: SortField; label: string }[] = [
   { value: "project_name", label: "Condo Name" },
@@ -43,8 +42,8 @@ export default function SearchClient() {
 
   function confirmProceed() {
     if (!selected) return;
-    // The confirmed=1 flag marks this as an intentional, billable lookup.
-    router.push(`/project/${selected.id}?confirmed=1`);
+    // Auth + the credit paywall are enforced on the project page itself.
+    router.push(`/project/${selected.id}`);
   }
 
   const selectStyle = {
@@ -119,7 +118,6 @@ export default function SearchClient() {
                     <div className="addr">
                       {[p.county && `${p.county} County`, p.state, p.zip_code].filter(Boolean).join(" · ")}
                       {`  ·  ID ${p.id}`}
-                      {isExpired(p.questionnaire_expiration) ? "  ·  ⚠ questionnaire expired" : ""}
                     </div>
                   </div>
                 </div>
@@ -129,31 +127,21 @@ export default function SearchClient() {
         </div>
       )}
 
-      {/* ---- Double-confirmation modal ---- */}
+      {/* ---- Confirmation modal ---- */}
       {selected && (
         <div className="modal-overlay" onClick={() => setSelected(null)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <h3>Are you sure you want to proceed?</h3>
+            <h3>View this record?</h3>
             <p className="muted" style={{ fontSize: 14 }}>
-              You&apos;re about to open the full cached record for{" "}
+              Opening the full cached record for{" "}
               <strong>{selected.project_name}</strong>
-              {selected.state ? ` (${selected.county ? selected.county + ", " : ""}${selected.state})` : ""}. This counts as one lookup.
+              {selected.state ? ` (${selected.county ? selected.county + ", " : ""}${selected.state})` : ""}{" "}
+              costs <strong>1 credit</strong>. You&apos;ll confirm on the next screen, and can view it
+              again later for free.
             </p>
-            {selected.blacklist && (
-              <div className="banner danger" style={{ marginTop: 8 }}>
-                ⛔ This project is <strong>blacklisted</strong>
-                {selected.blacklist.status ? ` (${selected.blacklist.status})` : ""}.
-                {selected.blacklist.scope ? ` ${selected.blacklist.scope}` : ""}
-              </div>
-            )}
-            {isExpired(selected.questionnaire_expiration) && (
-              <div className="banner danger" style={{ marginTop: 8 }}>
-                ⚠ The questionnaire for this project expired on {selected.questionnaire_expiration}. The cached copy may not be reusable.
-              </div>
-            )}
             <div className="actions">
               <button className="btn secondary" onClick={() => setSelected(null)}>Cancel</button>
-              <button className="btn" onClick={confirmProceed}>Yes, proceed</button>
+              <button className="btn" onClick={confirmProceed}>Continue</button>
             </div>
           </div>
         </div>

@@ -46,7 +46,7 @@ export default function AdminLeads({ leads }: { leads: Lead[] }) {
   return (
     <div>
       {/* Summary */}
-      <div className="kv" style={{ gridTemplateColumns: `repeat(${STATUSES.length + 1}, 1fr)`, marginBottom: 22 }}>
+      <div className="stat-grid" style={{ marginBottom: 22 }}>
         <button className="card" onClick={() => setFilter("all")} style={{ cursor: "pointer", textAlign: "left", border: filter === "all" ? "2px solid var(--brand)" : undefined }}>
           <div className="k">All</div>
           <div style={{ fontSize: 24, fontWeight: 800 }}>{leads.length}</div>

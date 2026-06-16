@@ -50,7 +50,7 @@ export default function LeadForm() {
 
   return (
     <form className="card glow" onSubmit={onSubmit}>
-      <div className="kv" style={{ gridTemplateColumns: "1fr 1fr", marginTop: 0 }}>
+      <div className="form-grid">
         <div>
           <label>Full name *</label>
           <input type="text" value={form.full_name} onChange={set("full_name")} placeholder="Jane Doe" />

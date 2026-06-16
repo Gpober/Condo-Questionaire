@@ -1,4 +1,4 @@
-import { isSupabaseConfigured, supabase } from "./supabase";
+import { getServerClient } from "./supabase/server";
 import { MOCK_PROJECTS } from "./mockData";
 import { CondoProject, SearchFilters, SortField } from "./types";
 
@@ -12,7 +12,8 @@ export async function searchProjects(
 ): Promise<CondoProject[]> {
   if (!hasAnyFilter(filters)) return [];
 
-  if (isSupabaseConfigured && supabase) {
+  const supabase = getServerClient();
+  if (supabase) {
     let q = supabase.from("condo_projects").select("*");
 
     if (filters.project_name) q = q.ilike("project_name", `%${filters.project_name}%`);
@@ -49,7 +50,8 @@ export async function searchProjects(
 // Full record. In production this is the billable "lookup" — call AFTER the
 // user confirms, and record the spend for the audit trail.
 export async function getProject(id: string): Promise<CondoProject | null> {
-  if (isSupabaseConfigured && supabase) {
+  const supabase = getServerClient();
+  if (supabase) {
     const { data, error } = await supabase
       .from("condo_projects")
       .select("*")

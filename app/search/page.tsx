@@ -1,11 +1,10 @@
-import AuthGuard from "@/components/AuthGuard";
 import TopBar from "@/components/TopBar";
 import SearchClient from "@/components/SearchClient";
 
 export default function SearchPage() {
   return (
-    <AuthGuard>
-      <TopBar />
+    <>
+      <TopBar showLogout={false} />
       <div className="container">
         <h1 style={{ marginTop: 0 }}>Find a condo project</h1>
         <p className="muted" style={{ marginTop: -8 }}>
@@ -13,6 +12,6 @@ export default function SearchPage() {
         </p>
         <SearchClient />
       </div>
-    </AuthGuard>
+    </>
   );
 }

@@ -56,9 +56,27 @@ are a **best guess** until the real Supabase schema is confirmed. To finalize:
 2. Update `CondoProjectSummary` / `CondoProjectDetail` in `lib/types.ts`.
 3. Align the `.select(...)` / `.ilike(...)` / `.eq(...)` calls in `lib/projects.ts`.
 
+## Authentication
+
+Uses **Supabase Auth** with cookie-based sessions (`@supabase/ssr`):
+
+- **Sign in** and self-service **sign up** on `/login`.
+- `middleware.ts` protects `/search` and `/project/*` server-side and refreshes
+  the session; `AuthGuard` is the client-side backstop.
+- Server queries run as the signed-in user, so **Row Level Security** applies.
+
+With open sign-up enabled, anyone can register. If you require email
+confirmation (Supabase default), users must confirm before their first sign-in.
+In demo mode (no keys) any email/password is accepted.
+
+### Recommended Supabase settings
+- Authentication → Providers → Email: keep **Confirm email** on for real use.
+- Add **RLS policies** to `condo_projects` / `blacklisted_projects` so only
+  authenticated users can read (the app already queries as the user).
+
 ## Not yet built (next steps)
 
-- Real Supabase Auth session handling (currently a localStorage demo guard).
+- **Roles** (internal staff vs external customers) — e.g. a `profiles` table or
+  user metadata, then RLS/UI gating per role.
 - Recording each confirmed lookup for the audit trail / billing.
-- Blacklist + legacy-table integration in search.
-- DPA program matching.
+- `condo_projects_legacy` integration and `dpa_programs` matching.

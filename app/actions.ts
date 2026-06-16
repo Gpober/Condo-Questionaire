@@ -1,22 +1,19 @@
 "use server";
 
 import { searchProjects } from "@/lib/projects";
-import { annotateBlacklist } from "@/lib/blacklist";
 import { SUPABASE_URL } from "@/lib/supabase/config";
-import { SearchFilters, SortField, SearchResult } from "@/lib/types";
+import { SearchFilters, SortField, CondoSummary } from "@/lib/types";
 
-export type SearchResponse = { results: SearchResult[]; error: string | null };
+export type SearchResponse = { results: CondoSummary[]; error: string | null };
 
 export async function searchAction(
   filters: SearchFilters,
   sortBy: SortField
 ): Promise<SearchResponse> {
   try {
-    const projects = await searchProjects(filters, sortBy);
-    const results = await annotateBlacklist(projects);
+    const results = await searchProjects(filters, sortBy);
     return { results, error: null };
   } catch (e: any) {
-    // Surface a readable message to the client; production redacts thrown errors.
     // The base URL is not secret (it's in the client bundle); log it to confirm
     // exactly what's being requested when diagnosing path errors.
     console.error("searchAction failed (base URL:", SUPABASE_URL, "):", e);

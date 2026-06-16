@@ -6,10 +6,10 @@ export default function SearchPage() {
     <>
       <TopBar />
       <div className="container">
-        <h1 style={{ marginTop: 0 }}>Find a condo project</h1>
-        <p className="muted" style={{ marginTop: -8 }}>
-          Search the cached questionnaire database before ordering a new one.
-        </p>
+        <div className="page-head">
+          <h1>Find a condo project</h1>
+          <p>Search the cached questionnaire database before ordering a new one.</p>
+        </div>
         <SearchClient />
       </div>
     </>

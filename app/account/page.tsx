@@ -15,10 +15,10 @@ export default async function AccountPage({
     <>
       <TopBar />
       <div className="container">
-        <h1 style={{ marginTop: 0 }}>Your account</h1>
-        <p className="muted" style={{ marginTop: -8 }}>
-          Credits are spent when you open a condo&apos;s cached record (1 credit each).
-        </p>
+        <div className="page-head">
+          <h1>Your account</h1>
+          <p>Credits are spent when you open a condo&apos;s cached record (1 credit each).</p>
+        </div>
 
         {purchase === "success" && (
           <div className="banner demo" style={{ background: "#dcfce7", color: "#166534", borderColor: "#bbf7d0" }}>

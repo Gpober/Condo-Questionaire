@@ -2,7 +2,7 @@ import "./globals.css";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Condo Questionnaire Hub",
+  title: "HOA Daddy — Condo warrantability, instantly",
   description: "Reuse cached condo questionnaires instead of re-ordering them.",
 };
 

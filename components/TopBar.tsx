@@ -56,7 +56,7 @@ export default function TopBar({ showLogout = true }: { showLogout?: boolean }) 
     <nav className="nav">
       <Link href="/" className="brand">
         <span className="logo" />
-        Condo<span>Q</span>&nbsp;Hub
+        HOA&nbsp;<span>Daddy</span>
       </Link>
 
       <div className="tabs">

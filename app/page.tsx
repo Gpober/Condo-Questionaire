@@ -95,7 +95,7 @@ export default function Home() {
       </section>
 
       <footer className="footer">
-        © {new Date().getFullYear()} CondoQ Hub · Reuse condo questionnaires, lower costs.
+        © {new Date().getFullYear()} HOA Daddy · hoadaddy.com · Reuse condo questionnaires, lower costs.
       </footer>
     </>
   );

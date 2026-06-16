@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { searchAction } from "@/app/actions";
 import { US_STATES } from "@/lib/states";
 import { SearchFilters, SortField, SearchResult } from "@/lib/types";
-import { reviewTone, isExpired } from "@/lib/status";
+import { isExpired } from "@/lib/status";
 
 const SORT_OPTIONS: { value: SortField; label: string }[] = [
   { value: "project_name", label: "Condo Name" },
@@ -13,13 +13,6 @@ const SORT_OPTIONS: { value: SortField; label: string }[] = [
   { value: "zip_code", label: "Zip Code" },
   { value: "county", label: "County" },
 ];
-
-function StatusBadge({ p }: { p: SearchResult }) {
-  if (p.blacklist) return <span className="badge blacklist">Blacklisted</span>;
-  const tone = reviewTone(p.condo_review);
-  const cls = tone === "ok" ? "warrantable" : tone === "bad" ? "non_warrantable" : "unknown";
-  return <span className={`badge ${cls}`}>{p.condo_review ?? "No review"}</span>;
-}
 
 export default function SearchClient() {
   const router = useRouter();
@@ -129,7 +122,6 @@ export default function SearchClient() {
                       {isExpired(p.questionnaire_expiration) ? "  ·  ⚠ questionnaire expired" : ""}
                     </div>
                   </div>
-                  <StatusBadge p={p} />
                 </div>
               ))}
             </>

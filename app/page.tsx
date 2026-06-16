@@ -9,13 +9,13 @@ export default function Home() {
 
       {/* Hero */}
       <section className="hero">
-        <span className="eyebrow">Cut condo questionnaire costs</span>
+        <span className="eyebrow">Condo warrantability, instantly</span>
         <h1>
-          Stop re-ordering the same <span className="grad">condo questionnaire</span> over and over
+          Know if it&apos;s <span className="grad">approved</span> — before you&apos;re in contract.
         </h1>
         <p className="lede">
-          Search a shared database of completed condo reviews and reuse them instantly —
-          for a fraction of the $150–$350 it costs to order a fresh one.
+          Stop taking chances on condo questionnaires. Check a project&apos;s warrantability in
+          seconds and save the money, escrow, and time a dead deal costs.
         </p>
         <div className="cta">
           <Link href="/search" className="btn lg">Search condos</Link>

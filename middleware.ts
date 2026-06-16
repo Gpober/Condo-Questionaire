@@ -6,8 +6,8 @@ import { createServerClient } from "@supabase/ssr";
 const PROTECTED: string[] = [];
 
 export async function middleware(req: NextRequest) {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.replace(/\/+$/, "");
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
 
   // Demo mode (no keys): skip server-side enforcement; client AuthGuard handles it.
   if (!url || !key) return NextResponse.next();

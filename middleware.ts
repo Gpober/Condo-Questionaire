@@ -1,13 +1,14 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from "@/lib/supabase/config";
 
 // Login is temporarily NOT required (app isn't live yet). To re-enable auth,
 // restore: const PROTECTED = ["/search", "/project"];
 const PROTECTED: string[] = [];
 
 export async function middleware(req: NextRequest) {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.replace(/\/+$/, "");
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
+  const url = SUPABASE_URL;
+  const key = SUPABASE_ANON_KEY;
 
   // Demo mode (no keys): skip server-side enforcement; client AuthGuard handles it.
   if (!url || !key) return NextResponse.next();

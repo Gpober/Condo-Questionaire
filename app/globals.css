@@ -85,6 +85,31 @@ h1, h2, h3 { letter-spacing: -0.02em; }
 .nav .tab.active { color: var(--brand-dark); background: var(--brand-tint); }
 .nav .spacer { flex: 1; }
 .nav .actions { display: flex; align-items: center; gap: 10px; }
+.nav .hamburger {
+  display: none;
+  align-items: center; justify-content: center;
+  width: 42px; height: 38px; border-radius: 10px;
+  border: 1px solid var(--border); background: #fff; cursor: pointer;
+  font-size: 18px; color: var(--ink);
+}
+.nav .mobile-menu {
+  display: none;
+  position: absolute; top: 100%; left: 0; right: 0;
+  background: #fff; border-bottom: 1px solid var(--border);
+  box-shadow: var(--shadow-md); padding: 10px 14px 16px;
+  flex-direction: column; gap: 4px;
+}
+.nav .mobile-menu a, .nav .mobile-menu button {
+  text-align: left; padding: 12px 14px; border-radius: 10px;
+  font-size: 16px; font-weight: 600; color: var(--text);
+  background: none; border: none; cursor: pointer; width: 100%;
+}
+.nav .mobile-menu a:hover { background: #f1f5f9; }
+.nav .mobile-menu a.active { color: var(--brand-dark); background: var(--brand-tint); }
+
+/* Responsive form / stat grids that collapse on mobile */
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 24px; }
+.stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 12px; }
 .nav .pill {
   display: inline-flex; align-items: center; gap: 7px;
   padding: 7px 13px; border-radius: 999px;
@@ -298,6 +323,11 @@ input:focus, select:focus {
 
 @media (max-width: 760px) {
   .grid-3, .steps, .price-grid { grid-template-columns: 1fr; }
-  .kv { grid-template-columns: 1fr; }
-  .nav .tabs { display: none; }
+  .kv, .form-grid { grid-template-columns: 1fr; }
+  .nav .tabs, .nav .actions { display: none; }
+  .nav .hamburger { display: inline-flex; }
+  .nav .mobile-menu.open { display: flex; }
+  .container { padding: 24px 16px 56px; }
+  .hero { padding: 48px 16px 40px; }
+  .page-head h1 { font-size: 26px; }
 }

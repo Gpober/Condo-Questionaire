@@ -57,7 +57,7 @@ export default function SearchClient() {
     <div>
       {/* ---- Search form ---- */}
       <form className="card" onSubmit={onSearch}>
-        <div className="kv" style={{ gridTemplateColumns: "1fr 1fr", gap: "14px 24px", marginTop: 0 }}>
+        <div className="form-grid">
           <div>
             <label>Sorted By</label>
             <select value={sortBy} onChange={(e) => setSortBy(e.target.value as SortField)} style={selectStyle}>

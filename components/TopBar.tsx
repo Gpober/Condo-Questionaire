@@ -18,6 +18,7 @@ export default function TopBar({ showLogout = true }: { showLogout?: boolean }) 
   const pathname = usePathname();
   const [signedIn, setSignedIn] = useState<boolean | null>(null);
   const [admin, setAdmin] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
     if (!isSupabaseConfigured) {
@@ -82,6 +83,41 @@ export default function TopBar({ showLogout = true }: { showLogout?: boolean }) 
           ) : null}
         </div>
       )}
+
+      {/* Mobile hamburger */}
+      <button
+        className="hamburger"
+        aria-label="Menu"
+        onClick={() => setMobileOpen((o) => !o)}
+      >
+        {mobileOpen ? "✕" : "☰"}
+      </button>
+
+      {/* Mobile dropdown menu */}
+      <div className={`mobile-menu ${mobileOpen ? "open" : ""}`}>
+        {TABS.map((t) => (
+          <Link
+            key={t.href}
+            href={t.href}
+            className={isActive(t.href) ? "active" : ""}
+            onClick={() => setMobileOpen(false)}
+          >
+            {t.label}
+          </Link>
+        ))}
+        {showLogout && signedIn && (
+          <>
+            {admin && (
+              <Link href="/admin" onClick={() => setMobileOpen(false)}>Admin</Link>
+            )}
+            <Link href="/account" onClick={() => setMobileOpen(false)}>Account</Link>
+            <button onClick={() => { setMobileOpen(false); signOut(); }}>Sign out</button>
+          </>
+        )}
+        {showLogout && signedIn === false && (
+          <Link href="/login" onClick={() => setMobileOpen(false)}>Sign in</Link>
+        )}
+      </div>
     </nav>
   );
 }

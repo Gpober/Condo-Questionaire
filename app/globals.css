@@ -285,6 +285,17 @@ input:focus, select:focus {
 
 .footer { text-align: center; color: var(--muted); font-size: 13.5px; padding: 30px 20px 50px; }
 
+/* ---------- Admin table ---------- */
+.admin-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.admin-table th {
+  text-align: left; padding: 13px 16px; background: #f8fafc;
+  font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); font-weight: 700;
+  border-bottom: 1px solid var(--border); white-space: nowrap;
+}
+.admin-table td { padding: 13px 16px; border-bottom: 1px solid var(--border); vertical-align: top; }
+.admin-table tr:last-child td { border-bottom: none; }
+.admin-table tbody tr:hover { background: #f9fafb; }
+
 @media (max-width: 760px) {
   .grid-3, .steps, .price-grid { grid-template-columns: 1fr; }
   .kv { grid-template-columns: 1fr; }

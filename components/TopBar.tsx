@@ -9,6 +9,7 @@ import { isSupabaseConfigured } from "@/lib/supabase/config";
 const TABS = [
   { href: "/", label: "Home" },
   { href: "/search", label: "Search" },
+  { href: "/next-steps", label: "What's Next" },
   { href: "/#pricing", label: "Pricing" },
 ];
 

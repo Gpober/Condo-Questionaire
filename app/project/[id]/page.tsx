@@ -113,6 +113,14 @@ export default async function ProjectPage({
             />
           </div>
         </div>
+
+        {!blacklist && (
+          <div className="cta-band" style={{ marginTop: 26 }}>
+            <h2>On the list and approved?</h2>
+            <p>Get matched with a recommended mortgage agent who can waive the questionnaire entirely.</p>
+            <Link href="/next-steps" className="btn secondary lg">See what&apos;s next</Link>
+          </div>
+        )}
       </div>
     </>
   );

@@ -9,10 +9,10 @@ create table if not exists public.admins (
 alter table public.admins enable row level security;
 -- No direct select policy; access is checked via the is_admin() function below.
 
--- >>> EDIT THESE: seed your two admin emails (use the emails you sign in with).
+-- Admin emails (the addresses each person signs in with).
 insert into public.admins (email) values
-  ('gpober06@gmail.com')
-  -- ('gonzalo@example.com')   -- uncomment and set Gonzalo's email
+  ('gpober@iamcfo.com'),
+  ('gdeleon@iamcfo.com')
 on conflict (email) do nothing;
 
 -- 2) is_admin(): true if the signed-in user's email is in admins -----------

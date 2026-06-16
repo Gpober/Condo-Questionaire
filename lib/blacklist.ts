@@ -52,7 +52,11 @@ async function fetchBlacklistForStates(states: string[]): Promise<BlacklistEntry
     let q = supabase.from("blacklisted_projects").select("*");
     if (states.length) q = q.in("state", states);
     const { data, error } = await q;
-    if (error) throw error;
+    if (error) {
+      // A blacklist failure shouldn't break search — log and skip flagging.
+      console.error("blacklist query failed:", error.message);
+      return [];
+    }
     return (data ?? []) as BlacklistEntry[];
   }
   return MOCK_BLACKLIST;

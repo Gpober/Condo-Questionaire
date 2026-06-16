@@ -38,8 +38,9 @@ export default function SearchClient() {
     setLoading(true);
     setError(null);
     try {
-      const data = await searchAction(filters, sortBy);
-      setResults(data);
+      const { results, error } = await searchAction(filters, sortBy);
+      if (error) setError(error);
+      setResults(results);
     } catch (err: any) {
       setError(err?.message ?? "Search failed.");
     } finally {

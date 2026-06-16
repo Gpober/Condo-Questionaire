@@ -56,8 +56,13 @@ export async function getProject(id: string): Promise<CondoProject | null> {
       .from("condo_projects")
       .select("*")
       .eq("id", Number(id))
-      .single();
-    if (error) throw error;
+      .maybeSingle();
+    if (error) {
+      // Don't crash the page — log and treat as "not found". A common cause is
+      // RLS blocking the anon role (login is disabled). See README.
+      console.error("getProject query failed:", error.message);
+      return null;
+    }
     return (data ?? null) as CondoProject | null;
   }
 

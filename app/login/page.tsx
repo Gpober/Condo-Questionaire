@@ -23,7 +23,7 @@ function LoginForm() {
   const [mode, setMode] = useState<Mode>("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(searchParams.get("error"));
   const [info, setInfo] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -45,11 +45,16 @@ function LoginForm() {
       }
 
       if (mode === "signup") {
-        const { data, error } = await supabase.auth.signUp({ email, password });
+        const emailRedirectTo = `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`;
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: { emailRedirectTo },
+        });
         if (error) throw error;
         // If email confirmation is required, there's no session yet.
         if (!data.session) {
-          setInfo("Account created. Check your email to confirm, then sign in.");
+          setInfo("Account created! Check your email and click the confirmation link to finish signing in.");
           setMode("signin");
           return;
         }

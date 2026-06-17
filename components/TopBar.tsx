@@ -55,8 +55,32 @@ export default function TopBar({ showLogout = true }: { showLogout?: boolean }) 
 
   return (
     <nav className="nav">
-      <Link href="/" className="brand">
-        <span className="logo" />
+      <Link href="/" className="brand" aria-label="HOA Daddy home">
+        <span className="logo" aria-hidden="true">
+          <svg viewBox="0 0 32 32" width="28" height="28" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="logoGrad" x1="4" y1="3" x2="28" y2="29" gradientUnits="userSpaceOnUse">
+                <stop stopColor="var(--brand-start)" />
+                <stop offset="1" stopColor="var(--brand-end)" />
+              </linearGradient>
+            </defs>
+            {/* taller condo tower */}
+            <rect x="5" y="9" width="11" height="19" rx="1.6" fill="url(#logoGrad)" />
+            {/* shorter front building */}
+            <rect x="14.5" y="14" width="12.5" height="14" rx="1.6" fill="#ffffff" fillOpacity="0.92" stroke="url(#logoGrad)" strokeWidth="1.6" />
+            {/* tower windows */}
+            <g fill="#ffffff" fillOpacity="0.92">
+              <rect x="8" y="12.5" width="2.2" height="2.2" rx="0.5" />
+              <rect x="11.8" y="12.5" width="2.2" height="2.2" rx="0.5" />
+              <rect x="8" y="16.5" width="2.2" height="2.2" rx="0.5" />
+              <rect x="11.8" y="16.5" width="2.2" height="2.2" rx="0.5" />
+              <rect x="8" y="20.5" width="2.2" height="2.2" rx="0.5" />
+              <rect x="11.8" y="20.5" width="2.2" height="2.2" rx="0.5" />
+            </g>
+            {/* checkmark on front building — nods to the questionnaire */}
+            <path d="M17.6 21.3l2.1 2.1 4.1-4.3" stroke="url(#logoGrad)" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </span>
         HOA&nbsp;<span>Daddy</span>
       </Link>
 

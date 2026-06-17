@@ -264,6 +264,48 @@ input:focus, select:focus {
   pointer-events: none;
 }
 .hero-scene svg { width: 100%; height: 100%; display: block; }
+
+/* ---------- Animated aerial flyover backdrop ---------- */
+.flyover {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.flyover .sky {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, #eef8fb 0%, #dcf0f3 45%, #c7e7ec 100%);
+}
+.flyover .layer {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 100%;
+}
+/* Each track holds two identical strips and slides left by exactly one strip
+   width, so the loop is seamless. Speed encodes depth: far = slow, near = fast. */
+.flyover .track {
+  display: flex;
+  width: 200%;
+  height: 100%;
+  will-change: transform;
+  animation: flyover-pan linear infinite;
+}
+.flyover .track > svg { flex: 0 0 50%; width: 50%; height: 100%; display: block; }
+.flyover .far .track   { animation-duration: 90s; }
+.flyover .mid .track   { animation-duration: 55s; }
+.flyover .near .track  { animation-duration: 32s; }
+.flyover .clouds .track { animation-duration: 24s; }
+
+@keyframes flyover-pan {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flyover .track { animation: none; }
+}
 /* Soft light wash over the top so the headline stays high-contrast. */
 .hero::before {
   content: "";

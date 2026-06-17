@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { getBrowserClient } from "@/lib/supabase/client";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import TopBar from "@/components/TopBar";
+import BeachScene from "@/components/BeachScene";
 
 type Mode = "signin" | "signup";
 
@@ -75,7 +76,8 @@ function LoginForm() {
   return (
     <>
       <TopBar showLogout={false} />
-      <div className="center-screen">
+      <div className="center-screen has-scene">
+        <BeachScene />
         <form className="card login-card" onSubmit={onSubmit}>
           <h1>{mode === "signin" ? "Sign in" : "Create account"}</h1>
           <p className="sub">Access the cached condo questionnaire database.</p>

@@ -184,6 +184,18 @@ input:focus, select:focus {
   min-height: calc(100vh - 58px);
   display: flex; align-items: center; justify-content: center; padding: 24px;
 }
+/* Beach scene backdrop for the login screen. */
+.center-screen.has-scene { position: relative; overflow: hidden; }
+.center-screen.has-scene .hero-scene { position: absolute; inset: 0; z-index: 0; }
+.center-screen.has-scene::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0.25));
+}
+.center-screen.has-scene .login-card { position: relative; z-index: 2; }
 .login-card { width: 100%; max-width: 400px; box-shadow: var(--shadow-lg); }
 .login-card h1 { margin: 0 0 4px; font-size: 24px; }
 .login-card p.sub { margin: 0 0 22px; color: var(--muted); font-size: 14.5px; }

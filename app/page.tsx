@@ -1,5 +1,6 @@
 import Link from "next/link";
 import TopBar from "@/components/TopBar";
+import BeachScene from "@/components/BeachScene";
 import { CREDIT_PACKS, formatUSD } from "@/lib/stripe/config";
 
 export default function Home() {
@@ -9,17 +10,20 @@ export default function Home() {
 
       {/* Hero */}
       <section className="hero">
-        <span className="eyebrow">Condo warrantability, instantly</span>
-        <h1>
-          Know if it&apos;s <span className="grad">approved</span> — before you&apos;re in contract.
-        </h1>
-        <p className="lede">
-          Stop taking chances on condo questionnaires. Check a project&apos;s warrantability in
-          seconds and save the money, escrow, and time a dead deal costs.
-        </p>
-        <div className="cta">
-          <Link href="/search" className="btn lg">Search condos</Link>
-          <Link href="/#pricing" className="btn secondary lg">View pricing</Link>
+        <BeachScene />
+        <div className="hero-inner">
+          <span className="eyebrow">Condo warrantability, instantly</span>
+          <h1>
+            Know if it&apos;s <span className="grad">approved</span> — before you&apos;re in contract.
+          </h1>
+          <p className="lede">
+            Stop taking chances on condo questionnaires. Check a project&apos;s warrantability in
+            seconds and save the money, escrow, and time a dead deal costs.
+          </p>
+          <div className="cta">
+            <Link href="/search" className="btn lg">Search condos</Link>
+            <Link href="/#pricing" className="btn secondary lg">View pricing</Link>
+          </div>
         </div>
       </section>
 

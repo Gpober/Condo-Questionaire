@@ -11,7 +11,7 @@ export default function Home() {
       <section className="hero hero-dark">
         <div className="hero-scene hero-skyline" aria-hidden="true" />
         <div className="hero-inner">
-          <span className="eyebrow">Condo warrantability, instantly</span>
+          <span className="eyebrow">Reuse Condo Questionnaires.<br />Save Money &amp; Time.</span>
           <h1>
             Know if it&apos;s <span className="grad">approved</span> — before you&apos;re in contract.
           </h1>

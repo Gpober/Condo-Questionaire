@@ -8,7 +8,7 @@ export default function Home() {
       <TopBar />
 
       {/* Hero */}
-      <section className="hero">
+      <section className="hero hero-dark">
         <div className="hero-scene hero-skyline" aria-hidden="true" />
         <div className="hero-inner">
           <span className="eyebrow">Condo warrantability, instantly</span>

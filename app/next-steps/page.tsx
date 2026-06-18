@@ -7,15 +7,17 @@ export default function NextStepsPage() {
       <TopBar />
 
       <section className="hero" style={{ paddingBottom: 24 }}>
-        <span className="eyebrow">See your condo on the list?</span>
-        <h1>
-          Here&apos;s what&apos;s <span className="grad">next</span>.
-        </h1>
-        <p className="lede">
-          If your project is on the list and approved, you don&apos;t have to start from scratch.
-          Get matched with a recommended mortgage agent who offers competitive pricing — and can
-          waive the condo questionnaire entirely.
-        </p>
+        <div className="hero-inner">
+          <span className="eyebrow">See your condo on the list?</span>
+          <h1>
+            Here&apos;s what&apos;s <span className="grad">next</span>.
+          </h1>
+          <p className="lede">
+            If your project is on the list and approved, you don&apos;t have to start from scratch.
+            Get matched with a recommended mortgage agent who offers competitive pricing — and can
+            waive the condo questionnaire entirely.
+          </p>
+        </div>
       </section>
 
       <section className="section" style={{ paddingTop: 0 }}>

@@ -11,18 +11,23 @@ export default function Home() {
       <section className="hero hero-dark">
         <div className="hero-scene hero-skyline" aria-hidden="true" />
         <div className="hero-inner">
-          <span className="eyebrow">Reuse Condo Questionnaires.<br />Save Money &amp; Time.</span>
-          <h1>
-            Know if it&apos;s <span className="grad">approved</span> — before you&apos;re in contract.
-          </h1>
+          <div className="hero-top">
+            <span className="eyebrow">Reuse Condo Questionnaires.<br />Save Money &amp; Time.</span>
+            <h1>
+              Know if it&apos;s <span className="grad">APPROVED</span> — before you&apos;re in contract.
+            </h1>
+          </div>
+          <div className="cta">
+            <Link href="/search" className="btn lg btn-stack">
+              <span>Search Condos</span>
+              <span className="btn-sub">(browsing is Free)</span>
+            </Link>
+            <Link href="/#pricing" className="btn secondary lg">View pricing</Link>
+          </div>
           <p className="lede">
             Stop taking chances on condo questionnaires. Check a project&apos;s warrantability in
             seconds and save the money, escrow, and time a dead deal costs.
           </p>
-          <div className="cta">
-            <Link href="/search" className="btn lg">Search condos</Link>
-            <Link href="/#pricing" className="btn secondary lg">View pricing</Link>
-          </div>
         </div>
       </section>
 

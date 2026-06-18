@@ -178,6 +178,9 @@ input:focus, select:focus {
 .btn.secondary:hover { background: #f8fafc; }
 .btn.ghost { background: transparent; color: var(--brand-dark); box-shadow: none; }
 .btn.lg { padding: 14px 26px; font-size: 16px; }
+/* Two-line stacked button (main label + small sub-label). */
+.btn.btn-stack { flex-direction: column; gap: 1px; line-height: 1.15; }
+.btn.btn-stack .btn-sub { font-size: 12.5px; font-weight: 600; opacity: 0.9; }
 
 /* ---------- Auth card ---------- */
 .center-screen {
@@ -297,7 +300,20 @@ input:focus, select:focus {
     rgba(255, 255, 255, 0) 64%
   );
 }
-.hero-inner { position: relative; z-index: 2; }
+/* Three vertical zones: headline on top, buttons in the middle, the supporting
+   paragraph dropped to the bottom. */
+.hero-inner {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 62vh;
+  gap: 28px;
+}
+.hero-inner .hero-top { width: 100%; }
+.hero-inner .lede { margin-bottom: 0; }
 .hero .eyebrow {
   display: inline-block;
   padding: 14px 30px; border-radius: 22px;

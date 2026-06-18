@@ -1,6 +1,5 @@
 import Link from "next/link";
 import TopBar from "@/components/TopBar";
-import FlyoverScene from "@/components/FlyoverScene";
 import { CREDIT_PACKS, formatUSD } from "@/lib/stripe/config";
 
 export default function Home() {
@@ -10,7 +9,7 @@ export default function Home() {
 
       {/* Hero */}
       <section className="hero">
-        <FlyoverScene />
+        <div className="hero-scene hero-skyline" aria-hidden="true" />
         <div className="hero-inner">
           <span className="eyebrow">Condo warrantability, instantly</span>
           <h1>

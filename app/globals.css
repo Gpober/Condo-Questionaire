@@ -264,12 +264,12 @@ input:focus, select:focus {
   pointer-events: none;
 }
 .hero-scene svg { width: 100%; height: 100%; display: block; }
-/* Hero photo backdrop — Brickell Key, Miami aerial (upscaled + sharpened).
+/* Hero photo backdrop — Miami downtown skyline at sunset (2000px panorama).
    Slow "Ken Burns" zoom/pan for a cinematic, moving feel. The baseline scale
    stays above 1 so edges never show as it pans; the overlay/text sit on
    separate layers and stay put. */
 .hero-skyline {
-  background: url("/hero-brickell.jpg") center 42% / cover no-repeat;
+  background: url("/image-1781742515873.jpg") center center / cover no-repeat;
   transform-origin: 50% 58%;
   will-change: transform;
   animation: hero-kenburns 28s ease-in-out infinite alternate;

@@ -13,14 +13,14 @@ export default function AppleIcon() {
           width: "100%",
           height: "100%",
           display: "flex",
-          background: "linear-gradient(135deg, #008e97, #fc4c02)",
+          background: "linear-gradient(135deg, #2563eb, #4f46e5)",
         }}
       >
         <svg viewBox="0 0 32 32" width="180" height="180" fill="none" xmlns="http://www.w3.org/2000/svg">
           {/* taller condo tower */}
           <rect x="6" y="8" width="10" height="18" rx="1.4" fill="#ffffff" fillOpacity="0.95" />
           {/* tower windows */}
-          <g fill="#008e97">
+          <g fill="#2563eb">
             <rect x="8.4" y="11" width="2" height="2" rx="0.4" />
             <rect x="11.8" y="11" width="2" height="2" rx="0.4" />
             <rect x="8.4" y="14.6" width="2" height="2" rx="0.4" />
@@ -31,7 +31,7 @@ export default function AppleIcon() {
           {/* shorter front building */}
           <rect x="15" y="13" width="11" height="13" rx="1.4" fill="#ffffff" fillOpacity="0.7" />
           {/* checkmark — nods to the questionnaire */}
-          <path d="M17.8 19.8l2.2 2.2 4.2-4.4" stroke="#008e97" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M17.8 19.8l2.2 2.2 4.2-4.4" stroke="#2563eb" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       </div>
     ),

@@ -1,12 +1,12 @@
 <svg viewBox="0 0 300 76" width="300" height="76" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="HOA Daddy">
   <defs>
     <linearGradient id="hd-grad" x1="8" y1="10" x2="64" y2="66" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#008e97"/>
-      <stop offset="1" stop-color="#fc4c02"/>
+      <stop stop-color="#2563eb"/>
+      <stop offset="1" stop-color="#4f46e5"/>
     </linearGradient>
     <linearGradient id="hd-word" x1="150" y1="24" x2="240" y2="56" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#008e97"/>
-      <stop offset="1" stop-color="#fc4c02"/>
+      <stop stop-color="#2563eb"/>
+      <stop offset="1" stop-color="#4f46e5"/>
     </linearGradient>
   </defs>
 
@@ -15,7 +15,7 @@
   <!-- taller condo tower -->
   <rect x="20" y="24" width="17" height="30" rx="2.4" fill="#ffffff" fill-opacity="0.96"/>
   <!-- tower windows -->
-  <g fill="#008e97">
+  <g fill="#2563eb">
     <rect x="24" y="29" width="3.4" height="3.4" rx="0.7"/>
     <rect x="29.8" y="29" width="3.4" height="3.4" rx="0.7"/>
     <rect x="24" y="35.2" width="3.4" height="3.4" rx="0.7"/>

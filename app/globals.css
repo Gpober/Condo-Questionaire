@@ -1,10 +1,10 @@
 :root {
-  /* Brand */
-  --brand-start: #0d9488; /* teal-600 */
-  --brand-end: #0891b2;   /* cyan-600 */
-  --brand: #0d9488;
-  --brand-dark: #0f766e;
-  --brand-tint: #ecfeff;
+  /* Brand — Miami Dolphins palette */
+  --brand-start: #008e97; /* Dolphins aqua */
+  --brand-end: #fc4c02;   /* Dolphins orange */
+  --brand: #008e97;
+  --brand-dark: #006b73;  /* deep aqua */
+  --brand-tint: #e6f7f8;  /* light aqua wash */
 
   /* Ink & surfaces */
   --ink: #0b1324;
@@ -72,7 +72,7 @@ h1, h2, h3 { letter-spacing: -0.02em; }
   justify-content: center;
   width: 28px; height: 28px;
   line-height: 0;
-  filter: drop-shadow(0 1px 2px rgba(13, 148, 136, 0.25));
+  filter: drop-shadow(0 1px 2px rgba(0, 142, 151, 0.25));
   transition: transform 0.15s ease;
 }
 .nav .brand:hover .logo { transform: translateY(-1px) scale(1.04); }
@@ -155,7 +155,7 @@ input[type="text"], input[type="email"], input[type="password"], input[type="sea
 }
 input:focus, select:focus {
   border-color: var(--brand);
-  box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.14);
+  box-shadow: 0 0 0 4px rgba(0, 142, 151, 0.14);
 }
 
 /* ---------- Buttons ---------- */
@@ -347,7 +347,7 @@ input:focus, select:focus {
 }
 .hero-dark h1 { color: #ffffff; text-shadow: 0 2px 16px rgba(6, 12, 24, 0.6); }
 .hero-dark h1 .grad {
-  background: linear-gradient(135deg, #7af0e0, #6fd6ff);
+  background: linear-gradient(135deg, #5fe0d8, #ff9d6b);
   -webkit-background-clip: text; background-clip: text; color: transparent;
 }
 .hero-dark p.lede { color: #f1f6fa; text-shadow: 0 1px 12px rgba(6, 12, 24, 0.65); }

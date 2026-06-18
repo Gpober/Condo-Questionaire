@@ -10,7 +10,7 @@ const STATUSES: LeadStatus[] = ["new", "contacted", "qualified", "converted", "c
 const STATUS_COLOR: Record<LeadStatus, string> = {
   new: "#2563eb",
   contacted: "#d97706",
-  qualified: "#0d9488",
+  qualified: "#008e97",
   converted: "#16a34a",
   closed: "#64748b",
 };

@@ -57,7 +57,7 @@ export default function TopBar({ showLogout = true }: { showLogout?: boolean }) 
     <nav className="nav">
       <Link href="/" className="brand" aria-label="HOA Daddy home">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/hoa-daddy-avatar.png" alt="" className="brand-avatar" />
+        <img src="/hoa-daddy-full.png" alt="" className="brand-full" />
         <span className="brand-name">HOA&nbsp;<span className="accent">Daddy</span></span>
       </Link>
 

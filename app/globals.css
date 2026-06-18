@@ -249,6 +249,35 @@ input:focus, select:focus {
 .banner.danger { background: var(--danger-bg); color: #991b1b; border: 1px solid #fecaca; }
 .banner.ok { background: var(--ok-bg); color: #166534; border: 1px solid #bbf7d0; }
 
+/* ---------- What's Next hero (image + copy) ---------- */
+/* This hero has no background photo, so drop the homepage scrim overlay. */
+.hero.ns-section { overflow: visible; }
+.hero.ns-section::before { content: none; }
+.ns-hero {
+  max-width: 1000px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  align-items: center;
+  gap: 40px;
+}
+.ns-hero-copy { text-align: left; }
+.ns-hero-media { display: flex; justify-content: center; }
+.ns-hero-media img {
+  width: auto;
+  max-width: 100%;
+  max-height: 520px;
+  border-radius: 18px;
+  box-shadow: var(--shadow-lg);
+  display: block;
+}
+@media (max-width: 760px) {
+  .ns-hero { grid-template-columns: 1fr; gap: 22px; }
+  .ns-hero-copy { text-align: center; }
+  .ns-hero-media { order: -1; }
+  .ns-hero-media img { max-height: 440px; }
+}
+
 /* ---------- Landing ---------- */
 .hero {
   position: relative;

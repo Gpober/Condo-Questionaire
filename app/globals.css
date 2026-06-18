@@ -264,9 +264,9 @@ input:focus, select:focus {
   pointer-events: none;
 }
 .hero-scene svg { width: 100%; height: 100%; display: block; }
-/* Static coastal-skyline backdrop (vector, crisp at any size). */
+/* Hero photo backdrop — Brickell Key, Miami aerial. */
 .hero-skyline {
-  background: url("/hero-skyline-sunset.svg") center bottom / cover no-repeat;
+  background: url("/image-1781742515873.jpg") center center / cover no-repeat;
 }
 
 /* Soft light wash over the top so the headline stays high-contrast. */

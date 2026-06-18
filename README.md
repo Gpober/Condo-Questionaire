@@ -105,6 +105,25 @@ Flow: `/account` → Buy → Stripe Checkout → on success the webhook calls th
 Until `STRIPE_SECRET_KEY` is set, the **“+5 test credits”** button on `/account`
 lets you exercise the credit flow without paying.
 
+## Growth features (SEO, email capture, referrals)
+
+Three marketing levers, all working in DEMO mode and gated behind their own SQL
+for production:
+
+- **Public SEO pages** — `/condo/[id]` are public, indexable summary pages
+  (name, location, and a coarse *warrantable / non-warrantable / blacklisted*
+  badge). The full cached questionnaire stays behind the credit paywall. A
+  crawlable directory lives at `/condo`, plus generated `/sitemap.xml` and
+  `/robots.txt`. Set `NEXT_PUBLIC_SITE_URL` so those use your real domain.
+  Run `supabase/public-pages.sql` (adds the summary-only `public_condo_status`
+  RPC that computes the badge server-side without leaking the paid fields).
+- **Email capture** — a subscribe box on `/search`, `/condo`, and each condo
+  page builds a marketing list. Captured emails appear under `/admin`. Run
+  `supabase/subscribers-setup.sql` (public insert, admin-only read).
+- **Invite-for-credits referrals** — each signed-in user gets a share link on
+  `/account`; when an invite signs up, both get bonus credits (2 referrer / 1
+  new). Run `supabase/referrals-setup.sql`.
+
 ## Not yet built (next steps)
 
 - Real Stripe Checkout + webhook (scaffolded, see above).

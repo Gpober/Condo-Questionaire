@@ -39,6 +39,21 @@ export interface CondoSummary {
   zip_code: string | null;
 }
 
+// Coarse warrantability classification shown on the PUBLIC, indexable condo
+// pages. Deliberately a single bucket — the underlying review text, dates, and
+// expirations stay behind the credit paywall.
+export type WarrantabilityStatus =
+  | "warrantable"
+  | "non_warrantable"
+  | "blacklisted"
+  | "unknown";
+
+// A project as exposed on the public SEO page: name + location + the coarse
+// status only. No expirations, review text, or source documents.
+export interface PublicCondo extends CondoSummary {
+  status: WarrantabilityStatus;
+}
+
 // A row from blacklisted_projects.
 export interface BlacklistEntry {
   id: number;

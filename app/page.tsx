@@ -98,6 +98,10 @@ export default function Home() {
       </section>
 
       <footer className="footer">
+        <p style={{ margin: "0 0 8px" }}>
+          <Link href="/search">Search condos</Link> · <Link href="/condo">Condo directory</Link> ·{" "}
+          <Link href="/next-steps">Get matched with an agent</Link>
+        </p>
         © {new Date().getFullYear()} HOA Daddy · hoadaddy.com · Reuse condo questionnaires, lower costs.
       </footer>
     </>

@@ -1,5 +1,6 @@
 import TopBar from "@/components/TopBar";
 import SearchClient from "@/components/SearchClient";
+import EmailCapture from "@/components/EmailCapture";
 
 export default function SearchPage() {
   return (
@@ -11,6 +12,9 @@ export default function SearchPage() {
           <p>Search the cached questionnaire database before ordering a new one.</p>
         </div>
         <SearchClient />
+        <div style={{ marginTop: 28 }}>
+          <EmailCapture source="search" />
+        </div>
       </div>
     </>
   );

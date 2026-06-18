@@ -1,9 +1,10 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { getBrowserClient } from "@/lib/supabase/client";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
+import { applyReferralAction } from "@/app/actions/referrals";
 import TopBar from "@/components/TopBar";
 import BeachScene from "@/components/BeachScene";
 
@@ -27,6 +28,28 @@ function LoginForm() {
   const [error, setError] = useState<string | null>(searchParams.get("error"));
   const [info, setInfo] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  // Stash an incoming referral code so we can credit both users after the
+  // invited person completes their first real sign-in.
+  useEffect(() => {
+    const ref = searchParams.get("ref");
+    if (ref) {
+      localStorage.setItem("cq_ref", ref);
+      setMode("signup");
+    }
+  }, [searchParams]);
+
+  async function redeemPendingReferral() {
+    const code = localStorage.getItem("cq_ref");
+    if (!code) return;
+    try {
+      await applyReferralAction(code);
+    } catch {
+      /* non-fatal: the user is signed in regardless */
+    } finally {
+      localStorage.removeItem("cq_ref");
+    }
+  }
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -63,6 +86,9 @@ function LoginForm() {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
       }
+
+      // Session is established now — apply any referral the user arrived with.
+      await redeemPendingReferral();
 
       router.replace(next);
       router.refresh();

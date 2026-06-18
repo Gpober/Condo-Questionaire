@@ -1,6 +1,8 @@
 import TopBar from "@/components/TopBar";
 import AccountClient from "@/components/AccountClient";
+import ReferralCard from "@/components/ReferralCard";
 import { getBalance } from "@/lib/credits";
+import { getReferralInfo } from "@/lib/referrals";
 import { CREDIT_PACKS, isStripeConfigured } from "@/lib/stripe/config";
 
 export default async function AccountPage({
@@ -9,6 +11,7 @@ export default async function AccountPage({
   searchParams: { purchase?: string };
 }) {
   const balance = await getBalance();
+  const referral = await getReferralInfo();
   const purchase = searchParams.purchase;
 
   return (
@@ -28,6 +31,8 @@ export default async function AccountPage({
         {purchase === "cancel" && (
           <div className="banner demo">Checkout canceled — no charge was made.</div>
         )}
+
+        <ReferralCard info={referral} />
 
         <AccountClient
           balance={balance}

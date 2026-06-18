@@ -6,17 +6,23 @@ export default function NextStepsPage() {
     <>
       <TopBar />
 
-      <section className="hero" style={{ paddingBottom: 24 }}>
-        <div className="hero-inner">
-          <span className="eyebrow">See your condo on the list?</span>
-          <h1>
-            Here&apos;s what&apos;s <span className="grad">next</span>.
-          </h1>
-          <p className="lede">
-            If your project is on the list and approved, you don&apos;t have to start from scratch.
-            Get matched with a recommended mortgage agent who offers competitive pricing — and can
-            waive the condo questionnaire entirely.
-          </p>
+      <section className="hero ns-section" style={{ paddingTop: 44, paddingBottom: 20, textAlign: "left", minHeight: 0 }}>
+        <div className="ns-hero">
+          <div className="ns-hero-copy">
+            <span className="eyebrow">See your condo on the list?</span>
+            <h1>
+              Here&apos;s what&apos;s <span className="grad">next</span>.
+            </h1>
+            <p className="lede" style={{ margin: "16px 0 0" }}>
+              If your project is on the list and approved, you don&apos;t have to start from scratch.
+              Get matched with a recommended mortgage agent who offers competitive pricing — and can
+              waive the condo questionnaire entirely.
+            </p>
+          </div>
+          <div className="ns-hero-media">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/next-steps.jpg" alt="HOA Daddy congratulating a happy couple closing on their new condo purchase" />
+          </div>
         </div>
       </section>
 

@@ -66,18 +66,13 @@ h1, h2, h3 { letter-spacing: -0.02em; }
   font-size: 17px;
   color: var(--ink);
 }
-.nav .brand .logo {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px; height: 28px;
-  line-height: 0;
-  filter: drop-shadow(0 1px 2px rgba(37, 99, 235, 0.25));
+.nav .brand-logo {
+  display: block;
+  height: 46px;
+  width: auto;
   transition: transform 0.15s ease;
 }
-.nav .brand:hover .logo { transform: translateY(-1px) scale(1.04); }
-.nav .brand .logo svg { display: block; }
-.nav .brand span { color: var(--brand-dark); }
+.nav .brand:hover .brand-logo { transform: translateY(-1px) scale(1.03); }
 .nav .tabs { display: flex; gap: 4px; margin-left: 10px; }
 .nav .tab {
   padding: 8px 14px;

@@ -25,8 +25,8 @@ export default function Home() {
             <Link href="/#pricing" className="btn secondary lg">View pricing</Link>
           </div>
           <p className="lede">
-            Stop taking chances on condo questionnaires. Check a project&apos;s warrantability in
-            seconds and save the money, escrow, and time a dead deal costs.
+            Verify condo warrantability instantly — before a dead deal drains your time and
+            money. Don&apos;t sweat it, HOA Daddy&apos;s got your back.
           </p>
         </div>
       </section>

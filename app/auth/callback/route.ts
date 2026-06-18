@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
-import { SUPABASE_URL, SUPABASE_ANON_KEY, isSupabaseConfigured } from "@/lib/supabase/config";
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from "@/lib/supabase/config";
 import type { EmailOtpType } from "@supabase/supabase-js";
 
 // Completes the email-confirmation link from a sign-up. Supabase sends the user
@@ -14,11 +14,6 @@ export async function GET(request: NextRequest) {
   const tokenHash = searchParams.get("token_hash");
   const type = searchParams.get("type") as EmailOtpType | null;
   const next = searchParams.get("next") || "/search";
-
-  // Demo mode (no Supabase keys): nothing to verify, just move along.
-  if (!isSupabaseConfigured) {
-    return NextResponse.redirect(`${origin}${next}`);
-  }
 
   // We mutate this response's cookies as Supabase sets the session.
   const response = NextResponse.redirect(`${origin}${next}`);

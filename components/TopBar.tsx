@@ -3,8 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { getBrowserClient } from "@/lib/supabase/client";
-import { isSupabaseConfigured } from "@/lib/supabase/config";
+import { requireBrowserClient } from "@/lib/supabase/client";
 
 const TABS = [
   { href: "/", label: "Home" },
@@ -21,11 +20,7 @@ export default function TopBar({ showLogout = true }: { showLogout?: boolean }) 
   const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
-    if (!isSupabaseConfigured) {
-      setSignedIn(localStorage.getItem("cq_auth") === "1");
-      return;
-    }
-    const supabase = getBrowserClient()!;
+    const supabase = requireBrowserClient();
     const checkAdmin = async () => {
       const { data } = await supabase.rpc("is_admin");
       setAdmin(Boolean(data));
@@ -43,9 +38,7 @@ export default function TopBar({ showLogout = true }: { showLogout?: boolean }) 
   }, []);
 
   async function signOut() {
-    const supabase = getBrowserClient();
-    if (supabase) await supabase.auth.signOut();
-    else localStorage.removeItem("cq_auth");
+    await requireBrowserClient().auth.signOut();
     router.replace("/");
     router.refresh();
   }

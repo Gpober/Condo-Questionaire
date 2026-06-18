@@ -14,5 +14,6 @@ function normalizeUrl(raw?: string): string | undefined {
 export const SUPABASE_URL = normalizeUrl(process.env.NEXT_PUBLIC_SUPABASE_URL);
 export const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
 
-// When env vars are absent we run in DEMO mode (mock data, fake auth).
+// The app requires Supabase. When these env vars are absent, database-backed
+// code throws (via require{Server,Browser}Client) instead of serving mock data.
 export const isSupabaseConfigured = Boolean(SUPABASE_URL && SUPABASE_ANON_KEY);

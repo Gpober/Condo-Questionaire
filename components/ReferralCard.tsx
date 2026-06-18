@@ -74,7 +74,7 @@ export default function ReferralCard({ info }: { info: ReferralInfo }) {
 
       {!info.configured && (
         <p className="hint" style={{ marginTop: 12 }}>
-          Demo preview — connect Supabase and run <code>referrals-setup.sql</code> to make this live.
+          Run <code>referrals-setup.sql</code> in Supabase to enable referrals.
         </p>
       )}
     </div>

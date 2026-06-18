@@ -2,8 +2,12 @@ import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { SUPABASE_URL, SUPABASE_ANON_KEY, isSupabaseConfigured } from "./config";
 
+const NOT_CONFIGURED =
+  "Supabase is not configured. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.";
+
 // Server-side Supabase client bound to the request cookies, so queries run as
-// the signed-in user and Row Level Security applies. Returns null in demo mode.
+// the signed-in user and Row Level Security applies. Returns null only when the
+// env vars are missing; most callers should use requireServerClient() instead.
 export function getServerClient() {
   if (!isSupabaseConfigured) return null;
 
@@ -26,4 +30,12 @@ export function getServerClient() {
       },
     },
   });
+}
+
+// Same as getServerClient() but throws if Supabase isn't configured. Use this
+// everywhere a real database connection is required — there is no mock fallback.
+export function requireServerClient() {
+  const client = getServerClient();
+  if (!client) throw new Error(NOT_CONFIGURED);
+  return client;
 }

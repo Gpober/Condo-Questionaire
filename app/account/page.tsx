@@ -5,6 +5,9 @@ import { getBalance } from "@/lib/credits";
 import { getReferralInfo } from "@/lib/referrals";
 import { CREDIT_PACKS, isStripeConfigured } from "@/lib/stripe/config";
 
+// Reads the signed-in user's balance/referral data — render per request.
+export const dynamic = "force-dynamic";
+
 export default async function AccountPage({
   searchParams,
 }: {

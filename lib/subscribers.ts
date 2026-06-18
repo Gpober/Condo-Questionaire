@@ -1,4 +1,4 @@
-import { getServerClient } from "./supabase/server";
+import { requireServerClient } from "./supabase/server";
 
 export interface Subscriber {
   id: number;
@@ -9,12 +9,7 @@ export interface Subscriber {
 
 // Marketing list, newest first. RLS returns rows only to admins.
 export async function getSubscribers(): Promise<Subscriber[]> {
-  const supabase = getServerClient();
-  if (!supabase) {
-    return [
-      { id: 1, email: "demo.lead@example.com", source: "search", created_at: new Date().toISOString() },
-    ];
-  }
+  const supabase = requireServerClient();
   const { data, error } = await supabase
     .from("subscribers")
     .select("*")

@@ -1,6 +1,6 @@
 "use server";
 
-import { getServerClient } from "@/lib/supabase/server";
+import { requireServerClient } from "@/lib/supabase/server";
 
 // Capture an email for the marketing list. Public: anyone can subscribe; the
 // list is readable only by admins (RLS). Duplicate emails are ignored.
@@ -13,8 +13,7 @@ export async function subscribeAction(
     return { ok: false, error: "Please enter a valid email." };
   }
 
-  const supabase = getServerClient();
-  if (!supabase) return { ok: true, error: null }; // demo mode
+  const supabase = requireServerClient();
 
   const { error } = await supabase
     .from("subscribers")

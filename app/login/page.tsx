@@ -2,8 +2,7 @@
 
 import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { getBrowserClient } from "@/lib/supabase/client";
-import { isSupabaseConfigured } from "@/lib/supabase/config";
+import { requireBrowserClient } from "@/lib/supabase/client";
 import { applyReferralAction } from "@/app/actions/referrals";
 import TopBar from "@/components/TopBar";
 import BeachScene from "@/components/BeachScene";
@@ -57,16 +56,7 @@ function LoginForm() {
     setInfo(null);
     setLoading(true);
     try {
-      const supabase = getBrowserClient();
-
-      // DEMO mode: no keys -> accept any non-empty credentials.
-      if (!supabase) {
-        if (!email || !password) throw new Error("Enter an email and password.");
-        localStorage.setItem("cq_auth", "1");
-        router.replace(next);
-        router.refresh();
-        return;
-      }
+      const supabase = requireBrowserClient();
 
       if (mode === "signup") {
         const emailRedirectTo = `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`;
@@ -157,10 +147,6 @@ function LoginForm() {
               {mode === "signin" ? "Sign up" : "Sign in"}
             </a>
           </p>
-
-          {!isSupabaseConfigured && (
-            <p className="hint">Demo mode: any email + password works. Connect Supabase to enable real auth.</p>
-          )}
         </form>
       </div>
     </>

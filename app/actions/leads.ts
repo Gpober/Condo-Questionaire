@@ -1,6 +1,6 @@
 "use server";
 
-import { getServerClient } from "@/lib/supabase/server";
+import { requireServerClient } from "@/lib/supabase/server";
 
 export interface LeadInput {
   full_name: string;
@@ -21,8 +21,7 @@ export async function submitLeadAction(
     return { ok: false, error: "Please enter a valid email." };
   }
 
-  const supabase = getServerClient();
-  if (!supabase) return { ok: true, error: null }; // demo mode
+  const supabase = requireServerClient();
 
   const { error } = await supabase.from("leads").insert({
     full_name: name,

@@ -8,6 +8,9 @@ import { getBalance } from "@/lib/credits";
 import { CondoProject } from "@/lib/types";
 import { reviewTone, isExpired, expiryLabel } from "@/lib/status";
 
+// Paywalled, per-user record — render per request.
+export const dynamic = "force-dynamic";
+
 function Field({ label, value, warn }: { label: string; value: React.ReactNode; warn?: boolean }) {
   return (
     <div>

@@ -9,7 +9,8 @@ export async function middleware(req: NextRequest) {
   const url = SUPABASE_URL;
   const key = SUPABASE_ANON_KEY;
 
-  // Demo mode (no keys): skip server-side enforcement; client AuthGuard handles it.
+  // Misconfigured (env vars missing): we can't build a client to check the
+  // session here. Pages that hit the database will throw loudly on their own.
   if (!url || !key) return NextResponse.next();
 
   let res = NextResponse.next({ request: req });

@@ -1,21 +1,5 @@
-import { getServerClient } from "./supabase/server";
+import { requireServerClient } from "./supabase/server";
 import { BlacklistEntry, CondoProject, SearchResult } from "./types";
-
-// Demo blacklist for when Supabase isn't configured. Flags "Riverside Gardens".
-const MOCK_BLACKLIST: BlacklistEntry[] = [
-  {
-    id: 1,
-    project_id: "BL-001",
-    address: "12 Riverside Dr",
-    city: "Austin",
-    state: "TX",
-    zip: "78701",
-    project_legal_name: "Riverside Gardens",
-    status: "Blacklisted",
-    date_text: "2025-11-20",
-    scope: "Active structural defect litigation against developer.",
-  },
-];
 
 // Normalize a project name for fuzzy comparison: lowercase, drop common suffixes
 // and punctuation, collapse whitespace.
@@ -47,19 +31,16 @@ function matches(project: CondoProject, bl: BlacklistEntry): boolean {
 }
 
 async function fetchBlacklistForStates(states: string[]): Promise<BlacklistEntry[]> {
-  const supabase = getServerClient();
-  if (supabase) {
-    let q = supabase.from("blacklisted_projects").select("*");
-    if (states.length) q = q.in("state", states);
-    const { data, error } = await q;
-    if (error) {
-      // A blacklist failure shouldn't break search — log and skip flagging.
-      console.error("blacklist query failed:", error.message);
-      return [];
-    }
-    return (data ?? []) as BlacklistEntry[];
+  const supabase = requireServerClient();
+  let q = supabase.from("blacklisted_projects").select("*");
+  if (states.length) q = q.in("state", states);
+  const { data, error } = await q;
+  if (error) {
+    // A blacklist failure shouldn't break search — log and skip flagging.
+    console.error("blacklist query failed:", error.message);
+    return [];
   }
-  return MOCK_BLACKLIST;
+  return (data ?? []) as BlacklistEntry[];
 }
 
 // Annotate each project with its blacklist match (or null).

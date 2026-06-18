@@ -7,6 +7,9 @@ import { getPublicCondo } from "@/lib/publicCondos";
 import { statusLabel, statusBadgeClass } from "@/lib/status";
 import { PublicCondo } from "@/lib/types";
 
+// Queries the database per request (no static params enumerated).
+export const dynamic = "force-dynamic";
+
 // Public, indexable summary pages — the top of the SEO funnel. They reveal only
 // name, location, and a coarse warrantability badge; the full cached record
 // stays behind the credit paywall on /project/[id].

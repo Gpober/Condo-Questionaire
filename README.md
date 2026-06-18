@@ -18,7 +18,7 @@ serves the cached record to every subsequent loan — gated behind an intentiona
 Login  →  Multi-field search  →  Results list  →  Double-confirm  →  Project detail
 ```
 
-- **Login** — email + password (Supabase Auth when configured; demo mode otherwise).
+- **Login** — email + password via Supabase Auth (required).
 - **Search** — structured filter form: State, County, Condo ID, Condo Name, City,
   Zip Code, plus a "Sorted By" selector (Condo Name / City / State / Zip Code).
 - **Results** — 0, 1, or many matches with a warrantability / blacklist badge.
@@ -37,9 +37,10 @@ npm install
 npm run dev      # http://localhost:3000
 ```
 
-Without Supabase env vars the app runs in **DEMO mode** against `lib/mockData.ts`
-(any email/password logs in). To connect your real database, copy `.env.example`
-to `.env.local` and set:
+**Supabase is required** — there is no mock/demo fallback. If the two
+`NEXT_PUBLIC_SUPABASE_*` env vars are missing, database-backed code throws
+(`require{Server,Browser}Client`) rather than serving fake data. Copy
+`.env.example` to `.env.local` and set:
 
 ```
 NEXT_PUBLIC_SUPABASE_URL=...
@@ -67,7 +68,6 @@ Uses **Supabase Auth** with cookie-based sessions (`@supabase/ssr`):
 
 With open sign-up enabled, anyone can register. If you require email
 confirmation (Supabase default), users must confirm before their first sign-in.
-In demo mode (no keys) any email/password is accepted.
 
 ### Recommended Supabase settings
 - Authentication → Providers → Email: keep **Confirm email** on for real use.
@@ -107,8 +107,7 @@ lets you exercise the credit flow without paying.
 
 ## Growth features (SEO, email capture, referrals)
 
-Three marketing levers, all working in DEMO mode and gated behind their own SQL
-for production:
+Three marketing levers, each gated behind its own SQL migration:
 
 - **Public SEO pages** — `/condo/[id]` are public, indexable summary pages
   (name, location, and a coarse *warrantable / non-warrantable / blacklisted*

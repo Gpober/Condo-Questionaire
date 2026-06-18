@@ -1,4 +1,4 @@
-import { getServerClient } from "./supabase/server";
+import { requireServerClient } from "./supabase/server";
 
 export type RedeemStatus =
   | "unlocked"
@@ -13,8 +13,7 @@ export interface RedeemResult {
 
 // Current signed-in user's id (or null).
 export async function getUserId(): Promise<string | null> {
-  const supabase = getServerClient();
-  if (!supabase) return null;
+  const supabase = requireServerClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -23,8 +22,7 @@ export async function getUserId(): Promise<string | null> {
 
 // Credit balance for the signed-in user (0 if none / not signed in).
 export async function getBalance(): Promise<number> {
-  const supabase = getServerClient();
-  if (!supabase) return 0;
+  const supabase = requireServerClient();
   const { data, error } = await supabase
     .from("profiles")
     .select("credit_balance")
@@ -38,8 +36,7 @@ export async function getBalance(): Promise<number> {
 
 // Has the signed-in user already unlocked this project?
 export async function isUnlocked(projectId: string): Promise<boolean> {
-  const supabase = getServerClient();
-  if (!supabase) return true; // demo mode: everything is viewable
+  const supabase = requireServerClient();
   const { data, error } = await supabase
     .from("lookups")
     .select("id")
@@ -54,8 +51,7 @@ export async function isUnlocked(projectId: string): Promise<boolean> {
 
 // Spend 1 credit to unlock a project (atomic, server-side via RPC).
 export async function redeemCredit(projectId: string): Promise<RedeemResult> {
-  const supabase = getServerClient();
-  if (!supabase) return { status: "unlocked", balance: 0 }; // demo mode
+  const supabase = requireServerClient();
   const { data, error } = await supabase.rpc("redeem_credit", {
     p_project_id: Number(projectId),
   });
@@ -68,8 +64,7 @@ export async function redeemCredit(projectId: string): Promise<RedeemResult> {
 
 // TEMPORARY: grant test credits to the current user (until Stripe is live).
 export async function grantTestCredits(amount: number): Promise<number> {
-  const supabase = getServerClient();
-  if (!supabase) return 0;
+  const supabase = requireServerClient();
   const { data, error } = await supabase.rpc("grant_test_credits", {
     p_amount: amount,
   });

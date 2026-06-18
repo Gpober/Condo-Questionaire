@@ -12,7 +12,7 @@ export default function Home() {
         <div className="hero-scene hero-skyline" aria-hidden="true" />
         <div className="hero-inner">
           <div className="hero-top">
-            <span className="eyebrow">Reuse Condo Questionnaires.<br />Save Money &amp; Time.</span>
+            <span className="eyebrow">Reuse Condo Questionnaires.<br />Save Time &amp; Money.</span>
             <h1>
               Know if it&apos;s <span className="grad">APPROVED</span> — before you&apos;re in contract.
             </h1>
@@ -22,7 +22,7 @@ export default function Home() {
               <span>Search Condos</span>
               <span className="btn-sub">(browsing is Free)</span>
             </Link>
-            <Link href="/#pricing" className="btn secondary lg">View pricing</Link>
+            <Link href="/#pricing" className="btn secondary lg">View Pricing</Link>
           </div>
           <p className="lede">
             Verify condo warrantability instantly — before a dead deal drains your time and

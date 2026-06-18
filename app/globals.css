@@ -269,7 +269,7 @@ input:focus, select:focus {
    stays above 1 so edges never show as it pans; the overlay/text sit on
    separate layers and stay put. */
 .hero-skyline {
-  background: url("/image-1781742515873.jpg") center center / cover no-repeat;
+  background: url("/hero-beach.jpg") center center / cover no-repeat;
   transform-origin: 50% 58%;
   will-change: transform;
   animation: hero-kenburns 28s ease-in-out infinite alternate;

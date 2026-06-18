@@ -393,9 +393,14 @@ input:focus, select:focus {
 
 .cta-band {
   max-width: 1000px; margin: 30px auto; padding: 44px 24px; border-radius: 20px; text-align: center;
-  background: linear-gradient(135deg, var(--brand-start), var(--brand-end));
+  /* Real Miami Beach photo with a branded blue scrim so the white text stays
+     legible while the picture shows through. */
+  background:
+    linear-gradient(135deg, rgba(30, 58, 138, 0.58), rgba(49, 46, 129, 0.58)),
+    url("/hero-beach.jpg") center 55% / cover no-repeat;
   color: #fff; box-shadow: var(--shadow-lg);
 }
+.cta-band h2, .cta-band p { text-shadow: 0 1px 8px rgba(8, 14, 28, 0.5); }
 .cta-band h2 { color: #fff; margin: 0 0 8px; }
 .cta-band p { margin: 0 0 22px; opacity: 0.92; }
 .cta-band .btn.secondary { background: #fff; color: var(--brand-dark); border: none; }

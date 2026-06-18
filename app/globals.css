@@ -343,16 +343,30 @@ input:focus, select:focus {
   -webkit-background-clip: text; background-clip: text; color: transparent;
 }
 .hero p.lede {
-  font-size: 20px;
+  font-size: clamp(21px, 2.4vw, 26px);
   line-height: 1.5;
   color: #1e293b;
   font-weight: 600;
-  max-width: 640px;
+  max-width: 680px;
   margin: 0 auto 28px;
   text-shadow: 0 1px 2px rgba(255, 255, 255, 0.9);
 }
-/* Matching translucent bubble around the supporting paragraph. */
 .hero .cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+/* Hero buttons: translucent "glass" like the eyebrow bubble. */
+.hero .cta .btn,
+.hero .cta .btn.secondary {
+  background: rgba(147, 178, 253, 0.26);
+  -webkit-backdrop-filter: blur(7px) saturate(120%);
+  backdrop-filter: blur(7px) saturate(120%);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: #fff;
+  text-shadow: 0 1px 6px rgba(8, 14, 28, 0.45);
+  box-shadow: 0 8px 24px rgba(8, 14, 28, 0.18);
+}
+.hero .cta .btn:hover,
+.hero .cta .btn.secondary:hover {
+  background: rgba(147, 178, 253, 0.38);
+}
 
 /* Dark hero variant (over the Miami photo): light text, a soft top darkening
    for headline contrast, and a fade into the page background at the bottom so

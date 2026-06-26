@@ -621,6 +621,11 @@ input:focus, select:focus {
 .audit-num.verified { color: #166534; }
 .audit-num.needs { color: #92400e; }
 .audit-label { font-size: 12.5px; color: var(--muted); font-weight: 600; }
+.audit-export { display: flex; gap: 8px; flex-wrap: wrap; }
+.audit-progress-wrap { margin-top: 16px; }
+.audit-progress-head { display: flex; justify-content: space-between; font-size: 12.5px; color: var(--muted); margin-bottom: 6px; }
+.audit-progress { height: 10px; background: #eef2f7; border-radius: 999px; overflow: hidden; }
+.audit-progress-bar { height: 100%; background: #166534; border-radius: 999px; transition: width 0.3s ease; }
 .audit-list { display: flex; flex-direction: column; gap: 8px; }
 .audit-row {
   display: flex; align-items: center; justify-content: space-between;

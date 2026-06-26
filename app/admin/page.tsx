@@ -3,6 +3,7 @@ import TopBar from "@/components/TopBar";
 import AdminLeads from "@/components/AdminLeads";
 import { isAdmin, getLeads } from "@/lib/admin";
 import { getReviewSummary } from "@/lib/reviews";
+import AuditExport from "@/components/AuditExport";
 
 export const dynamic = "force-dynamic";
 
@@ -41,8 +42,12 @@ export default async function AdminPage() {
 
         {/* ---- Data audit summary ---- */}
         <div className="card" style={{ marginBottom: 26 }}>
-          <h3 style={{ marginTop: 0 }}>Data audit</h3>
-          <div className="audit-stats">
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
+            <h3 style={{ margin: 0 }}>Data audit</h3>
+            <AuditExport needsList={audit.needsList} expired={audit.expired} />
+          </div>
+
+          <div className="audit-stats" style={{ marginTop: 14 }}>
             <div className="audit-stat">
               <span className="audit-num verified">{audit.verified.toLocaleString()}</span>
               <span className="audit-label">Verified ✓</span>
@@ -51,28 +56,75 @@ export default async function AdminPage() {
               <span className="audit-num needs">{audit.needsFixing.toLocaleString()}</span>
               <span className="audit-label">Need fixing ⚠</span>
             </div>
+            {audit.total > 0 && (
+              <div className="audit-stat">
+                <span className="audit-num">{audit.total.toLocaleString()}</span>
+                <span className="audit-label">Total records</span>
+              </div>
+            )}
           </div>
 
-          {audit.needsList.length > 0 ? (
-            <>
-              <p className="muted" style={{ fontSize: 13, margin: "18px 0 8px" }}>
-                Records you flagged — click to open and fix:
-              </p>
-              <div className="audit-list">
-                {audit.needsList.map((it) => (
-                  <Link key={it.project_id} href={`/project/${it.project_id}`} className="audit-row">
-                    <div>
-                      <div className="name">{it.project_name}</div>
-                      {it.note && <div className="audit-note">“{it.note}”</div>}
-                    </div>
-                    <span className="chev">→</span>
-                  </Link>
-                ))}
+          {audit.total > 0 && (
+            <div className="audit-progress-wrap">
+              <div className="audit-progress-head">
+                <span>Verified progress</span>
+                <span>{Math.round((audit.verified / audit.total) * 100)}% ({audit.verified.toLocaleString()} / {audit.total.toLocaleString()})</span>
               </div>
-            </>
+              <div className="audit-progress">
+                <div
+                  className="audit-progress-bar"
+                  style={{ width: `${Math.min(100, (audit.verified / audit.total) * 100)}%` }}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Auto-detected stale records (expirations passed) */}
+          <p className="muted" style={{ fontSize: 13, margin: "20px 0 8px", fontWeight: 600 }}>
+            Auto-flagged: expired / stale records{" "}
+            <span className="review-pill needs" style={{ marginLeft: 6 }}>
+              {audit.expired.length}{audit.expiredCapped ? "+" : ""}
+            </span>
+          </p>
+          {audit.expired.length > 0 ? (
+            <div className="audit-list">
+              {audit.expired.map((it) => (
+                <Link key={it.project_id} href={`/project/${it.project_id}`} className="audit-row">
+                  <div>
+                    <div className="name">{it.project_name} {it.state ? `· ${it.state}` : ""}</div>
+                    <div className="audit-note">Expired: {it.expired.join(" · ")}</div>
+                  </div>
+                  <span className="chev">→</span>
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <p className="muted" style={{ fontSize: 13 }}>
+              {audit.total > 0
+                ? "No expired questionnaire/budget/insurance dates found. 🎉"
+                : "Connect the service-role key to auto-detect expired records (see notes)."}
+            </p>
+          )}
+
+          {/* Manually flagged needs-fixing */}
+          <p className="muted" style={{ fontSize: 13, margin: "20px 0 8px", fontWeight: 600 }}>
+            Manually flagged: needs fixing
+          </p>
+          {audit.needsList.length > 0 ? (
+            <div className="audit-list">
+              {audit.needsList.map((it) => (
+                <Link key={it.project_id} href={`/project/${it.project_id}`} className="audit-row">
+                  <div>
+                    <div className="name">{it.project_name}</div>
+                    {it.note && <div className="audit-note">“{it.note}”</div>}
+                  </div>
+                  <span className="chev">→</span>
+                </Link>
+              ))}
+            </div>
           ) : (
             <p className="muted" style={{ fontSize: 13, marginBottom: 0 }}>
-              Nothing flagged as needing fixing. Mark records from any condo&apos;s page while you audit.
+              Nothing manually flagged yet. Use “Needs fixing” on any condo&apos;s page while you audit.
             </p>
           )}
         </div>

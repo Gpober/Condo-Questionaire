@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { getBrowserClient } from "@/lib/supabase/client";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
+import { validatePassword } from "@/lib/password";
+import PasswordStrength from "@/components/PasswordStrength";
 import TopBar from "@/components/TopBar";
 import BeachScene from "@/components/BeachScene";
 
@@ -35,7 +37,8 @@ export default function ResetPasswordPage() {
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
-    if (password.length < 6) return setError("Use at least 6 characters.");
+    const pwErr = validatePassword(password);
+    if (pwErr) return setError(pwErr);
     if (password !== confirm) return setError("Passwords don't match.");
     setLoading(true);
     try {
@@ -117,6 +120,7 @@ export default function ResetPasswordPage() {
                     )}
                   </button>
                 </div>
+                <PasswordStrength value={password} />
               </div>
 
               <div className="field">

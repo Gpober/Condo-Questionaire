@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { getBrowserClient } from "@/lib/supabase/client";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
+import { validatePassword } from "@/lib/password";
+import PasswordStrength from "@/components/PasswordStrength";
 
 type Mode = "signup" | "signin";
 
@@ -74,6 +76,10 @@ export default function AuthModal({
           throw new Error("Enter your first and last name.");
         if (mode === "signup" && !agreed)
           throw new Error("Please check the box to agree before creating your account.");
+        if (mode === "signup") {
+          const pwErr = validatePassword(password);
+          if (pwErr) throw new Error(pwErr);
+        }
         localStorage.setItem("cq_auth", "1");
         if (firstName) localStorage.setItem("cq_name", `${firstName} ${lastName}`.trim());
         onSignedIn();
@@ -83,6 +89,8 @@ export default function AuthModal({
       if (mode === "signup") {
         if (!firstName || !lastName) throw new Error("Enter your first and last name.");
         if (!agreed) throw new Error("Please check the box to agree before creating your account.");
+        const pwErr = validatePassword(password);
+        if (pwErr) throw new Error(pwErr);
         const emailRedirectTo = `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`;
         const { data, error } = await supabase.auth.signUp({
           email,
@@ -203,6 +211,7 @@ export default function AuthModal({
                 )}
               </button>
             </div>
+            {mode === "signup" && <PasswordStrength value={password} />}
           </div>
 
           {mode === "signup" && (

@@ -4,6 +4,8 @@ import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { getBrowserClient } from "@/lib/supabase/client";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
+import { validatePassword } from "@/lib/password";
+import PasswordStrength from "@/components/PasswordStrength";
 import TopBar from "@/components/TopBar";
 import BeachScene from "@/components/BeachScene";
 
@@ -60,6 +62,8 @@ function LoginForm() {
       }
 
       if (mode === "signup") {
+        const pwErr = validatePassword(password);
+        if (pwErr) throw new Error(pwErr);
         const emailRedirectTo = `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`;
         const { data, error } = await supabase.auth.signUp({
           email,
@@ -159,6 +163,7 @@ function LoginForm() {
                 )}
               </button>
             </div>
+            {mode === "signup" && <PasswordStrength value={password} />}
           </div>
           )}
 

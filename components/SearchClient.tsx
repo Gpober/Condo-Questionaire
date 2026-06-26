@@ -1,10 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { searchAction } from "@/app/actions";
 import { US_STATES, stateName } from "@/lib/states";
 import { SearchFilters, SortField, CondoSummary } from "@/lib/types";
+import { getBrowserClient } from "@/lib/supabase/client";
+import { isSupabaseConfigured } from "@/lib/supabase/config";
+import AuthModal from "@/components/AuthModal";
 
 const SORT_OPTIONS: { value: SortField; label: string }[] = [
   { value: "project_name", label: "Condo Name" },
@@ -24,6 +27,29 @@ export default function SearchClient() {
   // The state filter that produced the current results (snapshotted at search
   // time so the count label doesn't change if the dropdown is edited after).
   const [searchedState, setSearchedState] = useState<string>("");
+  // Sign-in state gates the results list: anonymous visitors see a blurred list
+  // behind a free-account popup; once signed in the list unblurs.
+  const [signedIn, setSignedIn] = useState<boolean>(false);
+  const [authOpen, setAuthOpen] = useState(false);
+  const [authMode, setAuthMode] = useState<"signup" | "signin">("signup");
+
+  useEffect(() => {
+    if (!isSupabaseConfigured) {
+      setSignedIn(localStorage.getItem("cq_auth") === "1");
+      return;
+    }
+    const supabase = getBrowserClient()!;
+    supabase.auth.getSession().then(({ data }) => setSignedIn(Boolean(data.session)));
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, session) =>
+      setSignedIn(Boolean(session)),
+    );
+    return () => sub.subscription.unsubscribe();
+  }, []);
+
+  function openAuth(mode: "signup" | "signin") {
+    setAuthMode(mode);
+    setAuthOpen(true);
+  }
 
   const set = (k: keyof SearchFilters) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
     setFilters((f) => ({ ...f, [k]: e.target.value }));
@@ -117,19 +143,54 @@ export default function SearchClient() {
                 <strong>{results.length.toLocaleString()}</strong> condo communit
                 {results.length === 1 ? "y" : "ies"} found. Tap one to view details.
               </p>
-              <div className="results-blur">
-                {results.map((p) => (
-                  <div key={p.id} className="result-row" onClick={() => setSelected(p)}>
-                    <div>
-                      <div className="name">{p.project_name}</div>
-                      <div className="addr">
-                        {[p.county && `${p.county} County`, p.state, p.zip_code].filter(Boolean).join(" · ")}
-                        {`  ·  ID ${p.id}`}
+              <div className="results-wrap">
+                <div className={signedIn ? undefined : "results-blur"}>
+                  {results.map((p) => (
+                    <div
+                      key={p.id}
+                      className="result-row"
+                      onClick={() => (signedIn ? setSelected(p) : openAuth("signup"))}
+                    >
+                      <div>
+                        <div className="name">{p.project_name}</div>
+                        <div className="addr">
+                          {[p.county && `${p.county} County`, p.state, p.zip_code].filter(Boolean).join(" · ")}
+                          {`  ·  ID ${p.id}`}
+                        </div>
                       </div>
+                      <span className="chev">→</span>
                     </div>
-                    <span className="chev">→</span>
+                  ))}
+                </div>
+
+                {!signedIn && (
+                  <div className="results-gate" onClick={() => openAuth("signup")}>
+                    <div className="results-gate-card" onClick={(e) => e.stopPropagation()}>
+                      <h3>Unlock the full list</h3>
+                      <p>
+                        Create a free account to view all{" "}
+                        <strong>{results.length.toLocaleString()}</strong>{" "}
+                        {searchedState ? `${stateName(searchedState)} ` : ""}
+                        condo communit{results.length === 1 ? "y" : "ies"}.
+                      </p>
+                      <button className="btn" onClick={() => openAuth("signup")}>
+                        Create free account
+                      </button>
+                      <p className="hint" style={{ marginTop: 12 }}>
+                        Already have an account?{" "}
+                        <a
+                          href="#"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            openAuth("signin");
+                          }}
+                        >
+                          Sign in
+                        </a>
+                      </p>
+                    </div>
                   </div>
-                ))}
+                )}
               </div>
             </>
           )}
@@ -154,6 +215,18 @@ export default function SearchClient() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* ---- Sign-up / sign-in popup (gates the results list) ---- */}
+      {authOpen && (
+        <AuthModal
+          initialMode={authMode}
+          onClose={() => setAuthOpen(false)}
+          onSignedIn={() => {
+            setSignedIn(true);
+            setAuthOpen(false);
+          }}
+        />
       )}
     </div>
   );

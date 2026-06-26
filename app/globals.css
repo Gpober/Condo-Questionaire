@@ -216,14 +216,45 @@ input:focus, select:focus {
 }
 .results-count strong { color: var(--brand-dark); font-weight: 800; }
 
-/* Blur the result list so visitors can see how many matches exist but must
-   pay to read the details. Rows stay clickable (tapping opens the credit
-   prompt); text can't be selected/copied straight off the blurred list. */
+/* Gate the result list: anonymous visitors see a blurred teaser of the rows
+   with a "create a free account" card on top; signing in removes the gate and
+   shows the full, sharp, clickable list. */
+.results-wrap { position: relative; }
 .results-blur {
   filter: blur(5px);
   user-select: none;
   -webkit-user-select: none;
+  pointer-events: none;     /* clicks go to the gate overlay instead */
+  max-height: 440px;        /* show only a teaser regardless of match count */
+  overflow: hidden;
 }
+.results-gate {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+  cursor: pointer;
+  border-radius: 12px;
+  /* fade the blurred rows into the page so the cutoff isn't a hard edge */
+  background: linear-gradient(
+    180deg,
+    rgba(244, 246, 251, 0.25) 0%,
+    rgba(244, 246, 251, 0.72) 55%,
+    rgba(244, 246, 251, 0.96) 100%
+  );
+}
+.results-gate-card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: var(--shadow-lg);
+  padding: 26px 28px;
+  text-align: center;
+  max-width: 380px;
+  cursor: default;
+}
+.results-gate-card h3 { margin: 0 0 8px; font-size: 19px; }
+.results-gate-card p { color: var(--muted); font-size: 14px; margin: 0 0 16px; }
+.results-gate-card .hint { margin: 12px 0 0; }
 
 .result-row {
   display: flex; align-items: center; justify-content: space-between;

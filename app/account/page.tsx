@@ -1,5 +1,6 @@
 import TopBar from "@/components/TopBar";
 import AccountClient from "@/components/AccountClient";
+import SiteFooter from "@/components/SiteFooter";
 import { getBalance } from "@/lib/credits";
 import { CREDIT_PACKS, isStripeConfigured } from "@/lib/stripe/config";
 
@@ -35,6 +36,7 @@ export default async function AccountPage({
           stripeReady={isStripeConfigured}
         />
       </div>
+      <SiteFooter />
     </>
   );
 }

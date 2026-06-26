@@ -1,5 +1,6 @@
 import TopBar from "@/components/TopBar";
 import LeadForm from "@/components/LeadForm";
+import SiteFooter from "@/components/SiteFooter";
 
 export default function NextStepsPage() {
   return (
@@ -53,9 +54,7 @@ export default function NextStepsPage() {
         </div>
       </section>
 
-      <footer className="footer">
-        © {new Date().getFullYear()} HOA Daddy · hoadaddy.com · Reuse condo questionnaires, lower costs.
-      </footer>
+      <SiteFooter />
     </>
   );
 }

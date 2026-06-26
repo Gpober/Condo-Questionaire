@@ -1,5 +1,6 @@
 import Link from "next/link";
 import TopBar from "@/components/TopBar";
+import SiteFooter from "@/components/SiteFooter";
 import { CREDIT_PACKS, formatUSD } from "@/lib/stripe/config";
 
 export default function Home() {
@@ -102,9 +103,7 @@ export default function Home() {
         <Link href="/search" className="btn secondary lg">Search condos</Link>
       </section>
 
-      <footer className="footer">
-        © {new Date().getFullYear()} HOA Daddy · hoadaddy.com · Reuse condo questionnaires, lower costs.
-      </footer>
+      <SiteFooter />
     </>
   );
 }

@@ -1,5 +1,6 @@
 import TopBar from "@/components/TopBar";
 import SearchClient from "@/components/SearchClient";
+import SiteFooter from "@/components/SiteFooter";
 
 export default function SearchPage() {
   return (
@@ -12,6 +13,7 @@ export default function SearchPage() {
         </div>
         <SearchClient />
       </div>
+      <SiteFooter />
     </>
   );
 }

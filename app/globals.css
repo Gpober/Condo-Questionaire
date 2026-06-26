@@ -314,15 +314,27 @@ input:focus, select:focus {
 .modal { background: #fff; border-radius: 18px; padding: 26px; max-width: 440px; width: 100%; box-shadow: var(--shadow-lg); }
 .modal h3 { margin: 0 0 8px; font-size: 20px; }
 .modal .actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 22px; }
-/* Marketing-consent disclaimer at the bottom of the sign-up popup. */
-.consent {
+/* Required marketing-consent checkbox in the sign-up popup. */
+.consent-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
   margin: 16px 0 0;
   font-size: 11px;
   line-height: 1.55;
   color: var(--muted);
-  text-align: center;
+  font-weight: 400;       /* override the global bold label */
+  cursor: pointer;
 }
-.consent a { color: var(--brand-dark); text-decoration: underline; }
+.consent-check input {
+  margin-top: 2px;
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+  accent-color: var(--brand-dark);
+  cursor: pointer;
+}
+.consent-check a { color: var(--brand-dark); text-decoration: underline; }
 
 /* Static legal pages (Terms, Privacy). */
 .legal { padding-bottom: 60px; }

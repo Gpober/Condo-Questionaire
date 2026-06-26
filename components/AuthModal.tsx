@@ -28,6 +28,7 @@ export default function AuthModal({
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [agreed, setAgreed] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -45,6 +46,8 @@ export default function AuthModal({
         if (!email || !password) throw new Error("Enter an email and password.");
         if (mode === "signup" && (!firstName || !lastName))
           throw new Error("Enter your first and last name.");
+        if (mode === "signup" && !agreed)
+          throw new Error("Please check the box to agree before creating your account.");
         localStorage.setItem("cq_auth", "1");
         if (firstName) localStorage.setItem("cq_name", `${firstName} ${lastName}`.trim());
         onSignedIn();
@@ -53,6 +56,7 @@ export default function AuthModal({
 
       if (mode === "signup") {
         if (!firstName || !lastName) throw new Error("Enter your first and last name.");
+        if (!agreed) throw new Error("Please check the box to agree before creating your account.");
         const emailRedirectTo = `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`;
         const { data, error } = await supabase.auth.signUp({
           email,
@@ -145,13 +149,33 @@ export default function AuthModal({
             />
           </div>
 
+          {mode === "signup" && (
+            <label className="consent-check">
+              <input
+                type="checkbox"
+                checked={agreed}
+                onChange={(e) => setAgreed(e.target.checked)}
+              />
+              <span>
+                I agree to the{" "}
+                <a href="/terms" target="_blank" rel="noopener noreferrer">Terms of Service</a> and{" "}
+                <a href="/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>, and I
+                consent to receive marketing, promotional, and informational communications —
+                including emails and, where I provide a number, calls or texts — from HOA Daddy and the
+                mortgage and real-estate partners I&apos;m matched with. Consent is not a condition of
+                any purchase; message frequency varies and message/data rates may apply. I can
+                unsubscribe or opt out at any time.
+              </span>
+            </label>
+          )}
+
           {error && <p style={{ color: "var(--danger)", fontSize: 14, margin: "4px 0 0" }}>{error}</p>}
           {info && <div className="banner demo" style={{ marginTop: 12 }}>{info}</div>}
 
           <button
             className="btn"
             type="submit"
-            disabled={loading}
+            disabled={loading || (mode === "signup" && !agreed)}
             style={{ width: "100%", justifyContent: "center", marginTop: 16 }}
           >
             {loading ? "Please wait…" : mode === "signup" ? "Create account" : "Sign in"}
@@ -172,19 +196,6 @@ export default function AuthModal({
             {mode === "signup" ? "Sign in" : "Sign up"}
           </a>
         </p>
-
-        {mode === "signup" && (
-          <p className="consent">
-            By creating an account you agree to our{" "}
-            <a href="/terms" target="_blank" rel="noopener noreferrer">Terms of Service</a> and{" "}
-            <a href="/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>, and you
-            consent to receive marketing, promotional, and informational communications — including
-            emails and, where you provide a number, calls or texts — from HOA Daddy and the mortgage
-            and real-estate partners we match you with. Consent is not a condition of any purchase.
-            Message frequency varies and message/data rates may apply. You can unsubscribe or opt out
-            at any time.
-          </p>
-        )}
 
         {!isSupabaseConfigured && (
           <p className="hint" style={{ textAlign: "center" }}>

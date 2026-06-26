@@ -9,6 +9,10 @@ import { SearchFilters, SortField, CondoSummary } from "@/lib/types";
 import { getBrowserClient } from "@/lib/supabase/client";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import AuthModal from "@/components/AuthModal";
+import { getAdminReviewMapAction } from "@/app/actions/reviews";
+import { ReviewStatus } from "@/lib/reviews";
+
+type ReviewFilter = "all" | "needs_fixing" | "verified" | "unreviewed";
 
 const SORT_OPTIONS: { value: SortField; label: string }[] = [
   { value: "project_name", label: "Condo Name" },
@@ -32,6 +36,8 @@ export default function SearchClient() {
   // behind a free-account popup; once signed in the list unblurs.
   const [signedIn, setSignedIn] = useState<boolean>(false);
   const [isAdminUser, setIsAdminUser] = useState(false);
+  const [reviewMap, setReviewMap] = useState<Record<number, ReviewStatus>>({});
+  const [reviewFilter, setReviewFilter] = useState<ReviewFilter>("all");
   const [authOpen, setAuthOpen] = useState(false);
   const [authMode, setAuthMode] = useState<"signup" | "signin">("signup");
   const [nudgeDismissed, setNudgeDismissed] = useState(false);
@@ -43,8 +49,16 @@ export default function SearchClient() {
     }
     const supabase = getBrowserClient()!;
     const refreshAdmin = (signed: boolean) => {
-      if (!signed) return setIsAdminUser(false);
-      supabase.rpc("is_admin").then(({ data }) => setIsAdminUser(Boolean(data)));
+      if (!signed) {
+        setIsAdminUser(false);
+        setReviewMap({});
+        return;
+      }
+      supabase.rpc("is_admin").then(({ data }) => {
+        const admin = Boolean(data);
+        setIsAdminUser(admin);
+        if (admin) getAdminReviewMapAction().then(setReviewMap);
+      });
     };
     supabase.auth.getSession().then(({ data }) => {
       setSignedIn(Boolean(data.session));
@@ -68,6 +82,14 @@ export default function SearchClient() {
       return;
     }
     setSelected(p);
+  }
+
+  // Admin list filter by audit status.
+  function matchesReviewFilter(id: number): boolean {
+    if (!isAdminUser || reviewFilter === "all") return true;
+    const s = reviewMap[id];
+    if (reviewFilter === "unreviewed") return !s;
+    return s === reviewFilter;
   }
 
   function openAuth(mode: "signup" | "signin") {
@@ -197,16 +219,46 @@ export default function SearchClient() {
                 <strong>{results.length.toLocaleString()}</strong> condo communit
                 {results.length === 1 ? "y" : "ies"} found. Tap one to view details.
               </p>
+
+              {isAdminUser && (
+                <div className="review-filter">
+                  <label htmlFor="review-filter">Audit filter</label>
+                  <select
+                    id="review-filter"
+                    value={reviewFilter}
+                    onChange={(e) => setReviewFilter(e.target.value as ReviewFilter)}
+                  >
+                    <option value="all">All records</option>
+                    <option value="needs_fixing">Needs fixing ⚠</option>
+                    <option value="verified">Verified ✓</option>
+                    <option value="unreviewed">Not yet reviewed</option>
+                  </select>
+                  {reviewFilter !== "all" && (
+                    <span className="review-filter-count">
+                      {results.filter((p) => matchesReviewFilter(p.id)).length.toLocaleString()} shown
+                    </span>
+                  )}
+                </div>
+              )}
+
               <div className="results-wrap">
                 <div className={signedIn ? undefined : "results-blur"}>
-                  {results.map((p) => (
+                  {results.filter((p) => matchesReviewFilter(p.id)).map((p) => (
                     <div
                       key={p.id}
                       className="result-row"
                       onClick={() => openRecord(p)}
                     >
                       <div>
-                        <div className="name">{p.project_name}</div>
+                        <div className="name">
+                          {p.project_name}
+                          {isAdminUser && reviewMap[p.id] === "verified" && (
+                            <span className="review-pill verified" style={{ marginLeft: 8 }}>✓ Verified</span>
+                          )}
+                          {isAdminUser && reviewMap[p.id] === "needs_fixing" && (
+                            <span className="review-pill needs" style={{ marginLeft: 8 }}>⚠ Needs fixing</span>
+                          )}
+                        </div>
                         <div className="addr">
                           {[p.county && `${p.county} County`, p.state, p.zip_code].filter(Boolean).join(" · ")}
                           {`  ·  ID ${p.id}`}

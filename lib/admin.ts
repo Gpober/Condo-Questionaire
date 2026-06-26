@@ -1,4 +1,5 @@
 import { getServerClient } from "./supabase/server";
+import { getAdminClient } from "./supabase/admin";
 import { Lead, LeadStatus } from "./types";
 
 // Demo leads so the admin UI is previewable without Supabase.
@@ -26,6 +27,45 @@ const MOCK_LEADS: Lead[] = [
     created_at: new Date(Date.now() - 86400000).toISOString(),
   },
 ];
+
+export interface Member {
+  id: string;
+  email: string | null;
+  name: string | null;
+  created_at: string | null;
+  last_sign_in_at: string | null;
+}
+
+// Everyone who has created a login (Supabase auth users). Requires the
+// service-role key (auth admin API); returns [] without it.
+export async function getMembers(): Promise<Member[]> {
+  const admin = getAdminClient();
+  if (!admin) return [];
+  const members: Member[] = [];
+  const perPage = 1000;
+  for (let page = 1; ; page++) {
+    const { data, error } = await admin.auth.admin.listUsers({ page, perPage });
+    if (error) {
+      console.error("getMembers failed:", error.message);
+      break;
+    }
+    const users = data?.users ?? [];
+    for (const u of users) {
+      const meta = (u.user_metadata ?? {}) as { first_name?: string; last_name?: string };
+      const name = [meta.first_name, meta.last_name].filter(Boolean).join(" ") || null;
+      members.push({
+        id: u.id,
+        email: u.email ?? null,
+        name,
+        created_at: u.created_at ?? null,
+        last_sign_in_at: u.last_sign_in_at ?? null,
+      });
+    }
+    if (users.length < perPage) break;
+  }
+  members.sort((a, b) => (b.created_at ?? "").localeCompare(a.created_at ?? ""));
+  return members;
+}
 
 // Is the current signed-in user an admin?
 export async function isAdmin(): Promise<boolean> {

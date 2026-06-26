@@ -1,7 +1,7 @@
 import Link from "next/link";
 import TopBar from "@/components/TopBar";
 import AdminLeads from "@/components/AdminLeads";
-import { isAdmin, getLeads } from "@/lib/admin";
+import { isAdmin, getLeads, getMembers } from "@/lib/admin";
 import { getReviewSummary } from "@/lib/reviews";
 import AuditExport from "@/components/AuditExport";
 
@@ -30,6 +30,9 @@ export default async function AdminPage() {
 
   const leads = await getLeads();
   const audit = await getReviewSummary();
+  const members = await getMembers();
+  const fmt = (d: string | null) =>
+    d ? new Date(d).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" }) : "—";
 
   return (
     <>
@@ -128,6 +131,43 @@ export default async function AdminPage() {
             </p>
           )}
         </div>
+
+        {/* ---- Members (everyone who created a login) ---- */}
+        <div className="page-head" style={{ marginTop: 30 }}>
+          <h2 style={{ margin: 0 }}>Members</h2>
+          <p>Everyone who created a login to view the list ({members.length.toLocaleString()}).</p>
+        </div>
+        {members.length > 0 ? (
+          <div style={{ overflowX: "auto", marginBottom: 30 }}>
+            <table className="admin-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Joined</th>
+                  <th>Last sign-in</th>
+                </tr>
+              </thead>
+              <tbody>
+                {members.map((m) => (
+                  <tr key={m.id}>
+                    <td>{m.name ?? "—"}</td>
+                    <td>{m.email ?? "—"}</td>
+                    <td>{fmt(m.created_at)}</td>
+                    <td>{fmt(m.last_sign_in_at)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div className="card" style={{ marginBottom: 30 }}>
+            <p className="muted" style={{ margin: 0, fontSize: 13 }}>
+              No members to show yet — or the <code>SUPABASE_SERVICE_ROLE_KEY</code> isn&apos;t set in
+              your hosting env, which is required to list login accounts.
+            </p>
+          </div>
+        )}
 
         <div className="page-head">
           <h2 style={{ margin: 0 }}>Leads</h2>

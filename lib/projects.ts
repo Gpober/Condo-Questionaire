@@ -1,4 +1,6 @@
 import { getServerClient } from "./supabase/server";
+import { getAdminClient } from "./supabase/admin";
+import { isAdmin } from "./admin";
 import { MOCK_PROJECTS } from "./mockData";
 import { CondoProject, CondoSummary, SearchFilters, SortField } from "./types";
 
@@ -104,9 +106,25 @@ export async function getProject(id: string): Promise<CondoProject | null> {
       .maybeSingle();
     if (error) {
       console.error("getProject query failed:", error.message);
-      return null;
     }
-    return (data ?? null) as CondoProject | null;
+    if (data) return data as CondoProject;
+
+    // Admin override: admins view any record for free (no credit needed). The
+    // get_unlocked_project RPC also grants this once admin-free-access.sql is
+    // applied; this service-role fallback makes it work even before then.
+    if (await isAdmin()) {
+      const admin = getAdminClient();
+      if (admin) {
+        const { data: row, error: adminErr } = await admin
+          .from("condo_projects")
+          .select("*")
+          .eq("id", Number(id))
+          .maybeSingle();
+        if (adminErr) console.error("getProject admin fallback failed:", adminErr.message);
+        if (row) return row as CondoProject;
+      }
+    }
+    return null;
   }
   return MOCK_PROJECTS.find((p) => String(p.id) === id) ?? null;
 }

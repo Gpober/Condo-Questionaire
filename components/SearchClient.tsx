@@ -31,6 +31,7 @@ export default function SearchClient() {
   // Sign-in state gates the results list: anonymous visitors see a blurred list
   // behind a free-account popup; once signed in the list unblurs.
   const [signedIn, setSignedIn] = useState<boolean>(false);
+  const [isAdminUser, setIsAdminUser] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
   const [authMode, setAuthMode] = useState<"signup" | "signin">("signup");
   const [nudgeDismissed, setNudgeDismissed] = useState(false);
@@ -41,12 +42,33 @@ export default function SearchClient() {
       return;
     }
     const supabase = getBrowserClient()!;
-    supabase.auth.getSession().then(({ data }) => setSignedIn(Boolean(data.session)));
-    const { data: sub } = supabase.auth.onAuthStateChange((_e, session) =>
-      setSignedIn(Boolean(session)),
-    );
+    const refreshAdmin = (signed: boolean) => {
+      if (!signed) return setIsAdminUser(false);
+      supabase.rpc("is_admin").then(({ data }) => setIsAdminUser(Boolean(data)));
+    };
+    supabase.auth.getSession().then(({ data }) => {
+      setSignedIn(Boolean(data.session));
+      refreshAdmin(Boolean(data.session));
+    });
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
+      setSignedIn(Boolean(session));
+      refreshAdmin(Boolean(session));
+    });
     return () => sub.subscription.unsubscribe();
   }, []);
+
+  // What happens when a result row is clicked:
+  //  - not signed in -> sign-up popup
+  //  - admin         -> straight to the record (no credit prompt)
+  //  - regular user  -> the "costs 1 credit" confirm modal
+  function openRecord(p: CondoSummary) {
+    if (!signedIn) return openAuth("signup");
+    if (isAdminUser) {
+      router.push(`/project/${p.id}`);
+      return;
+    }
+    setSelected(p);
+  }
 
   function openAuth(mode: "signup" | "signin") {
     setAuthMode(mode);
@@ -142,13 +164,24 @@ export default function SearchClient() {
             <>
               {signedIn && !nudgeDismissed && (
                 <div className="results-nudge">
-                  <span className="results-nudge-text">
-                    ✅ You&apos;re in — the full list is unlocked. Opening a condo&apos;s full record
-                    costs <strong>1 credit</strong>.
-                  </span>
+                  {isAdminUser ? (
+                    <span className="results-nudge-text">
+                      ✅ <strong>Admin access</strong> — you can open any record for free; no credit
+                      is charged.
+                    </span>
+                  ) : (
+                    <span className="results-nudge-text">
+                      ✅ You&apos;re in — the full list is unlocked. Opening a condo&apos;s full record
+                      costs <strong>1 credit</strong>.
+                    </span>
+                  )}
                   <span className="results-nudge-actions">
-                    <Link href="/account" className="btn sm">Buy credits</Link>
-                    <Link href="/#pricing" className="btn sm secondary">See pricing</Link>
+                    {!isAdminUser && (
+                      <>
+                        <Link href="/account" className="btn sm">Buy credits</Link>
+                        <Link href="/#pricing" className="btn sm secondary">See pricing</Link>
+                      </>
+                    )}
                     <button
                       className="results-nudge-close"
                       aria-label="Dismiss"
@@ -170,7 +203,7 @@ export default function SearchClient() {
                     <div
                       key={p.id}
                       className="result-row"
-                      onClick={() => (signedIn ? setSelected(p) : openAuth("signup"))}
+                      onClick={() => openRecord(p)}
                     >
                       <div>
                         <div className="name">{p.project_name}</div>

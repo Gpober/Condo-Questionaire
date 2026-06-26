@@ -5,6 +5,7 @@ import Paywall from "@/components/Paywall";
 import { getProject, getCondoSummary } from "@/lib/projects";
 import { getBlacklistFor } from "@/lib/blacklist";
 import { getBalance } from "@/lib/credits";
+import { isAdmin } from "@/lib/admin";
 import { CondoProject } from "@/lib/types";
 import { reviewTone, isExpired, expiryLabel } from "@/lib/status";
 
@@ -45,6 +46,7 @@ export default async function ProjectPage({
     );
   }
 
+  const admin = await isAdmin();
   const blacklist = await getBlacklistFor(p);
   const tone = reviewTone(p.condo_review);
   const badgeCls = tone === "ok" ? "warrantable" : tone === "bad" ? "non_warrantable" : "unknown";
@@ -67,6 +69,12 @@ export default async function ProjectPage({
           {[p.county && `${p.county} County`, p.state, p.zip_code].filter(Boolean).join(" · ")}
           {`  ·  Condo ID ${p.id}`}
         </p>
+
+        {admin && (
+          <div className="banner demo" style={{ background: "#dcfce7", color: "#166534", borderColor: "#bbf7d0" }}>
+            ✅ Admin access — viewing this record for free (no credit charged).
+          </div>
+        )}
 
         {blacklist && (
           <div className="banner danger">

@@ -6,6 +6,8 @@ import { getProject, getCondoSummary } from "@/lib/projects";
 import { getBlacklistFor } from "@/lib/blacklist";
 import { getBalance } from "@/lib/credits";
 import { isAdmin } from "@/lib/admin";
+import { getRecordReview } from "@/lib/reviews";
+import RecordReviewPanel from "@/components/RecordReview";
 import { CondoProject } from "@/lib/types";
 import { reviewTone, isExpired, expiryLabel } from "@/lib/status";
 
@@ -47,6 +49,7 @@ export default async function ProjectPage({
   }
 
   const admin = await isAdmin();
+  const review = admin ? await getRecordReview(params.id) : null;
   const blacklist = await getBlacklistFor(p);
   const tone = reviewTone(p.condo_review);
   const badgeCls = tone === "ok" ? "warrantable" : tone === "bad" ? "non_warrantable" : "unknown";
@@ -63,6 +66,12 @@ export default async function ProjectPage({
             <span className="badge blacklist">Blacklisted</span>
           ) : (
             <span className={`badge ${badgeCls}`}>{p.condo_review ?? "No review"}</span>
+          )}
+          {admin && review?.status === "verified" && (
+            <span className="review-pill verified">✓ Verified</span>
+          )}
+          {admin && review?.status === "needs_fixing" && (
+            <span className="review-pill needs">⚠ Needs fixing</span>
           )}
         </div>
         <p className="muted" style={{ marginTop: 4 }}>
@@ -121,6 +130,8 @@ export default async function ProjectPage({
             />
           </div>
         </div>
+
+        {admin && <RecordReviewPanel projectId={params.id} initial={review} />}
 
         {!blacklist && (
           <div className="cta-band" style={{ marginTop: 26 }}>

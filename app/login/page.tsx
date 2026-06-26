@@ -7,7 +7,7 @@ import { isSupabaseConfigured } from "@/lib/supabase/config";
 import TopBar from "@/components/TopBar";
 import BeachScene from "@/components/BeachScene";
 
-type Mode = "signin" | "signup";
+type Mode = "signin" | "signup" | "reset";
 
 export default function LoginPage() {
   return (
@@ -39,10 +39,23 @@ function LoginForm() {
 
       // DEMO mode: no keys -> accept any non-empty credentials.
       if (!supabase) {
+        if (mode === "reset") {
+          setInfo("Demo mode: password reset requires Supabase to be connected.");
+          return;
+        }
         if (!email || !password) throw new Error("Enter an email and password.");
         localStorage.setItem("cq_auth", "1");
         router.replace(next);
         router.refresh();
+        return;
+      }
+
+      if (mode === "reset") {
+        if (!email) throw new Error("Enter your email to receive a reset link.");
+        const redirectTo = `${window.location.origin}/auth/callback?next=${encodeURIComponent("/reset-password")}`;
+        const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo });
+        if (error) throw error;
+        setInfo("If an account exists for that email, we've sent a password reset link. Check your inbox.");
         return;
       }
 
@@ -80,8 +93,12 @@ function LoginForm() {
       <div className="center-screen has-scene">
         <BeachScene />
         <form className="card login-card" onSubmit={onSubmit}>
-          <h1>{mode === "signin" ? "Sign in" : "Create account"}</h1>
-          <p className="sub">Access the cached condo questionnaire database.</p>
+          <h1>{mode === "signin" ? "Sign in" : mode === "signup" ? "Create account" : "Reset password"}</h1>
+          <p className="sub">
+            {mode === "reset"
+              ? "Enter your email and we'll send you a link to set a new password."
+              : "Access the cached condo questionnaire database."}
+          </p>
 
           <div className="field">
             <label htmlFor="email">Email</label>
@@ -95,8 +112,25 @@ function LoginForm() {
             />
           </div>
 
+          {mode !== "reset" && (
           <div className="field">
-            <label htmlFor="password">Password</label>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+              <label htmlFor="password">Password</label>
+              {mode === "signin" && (
+                <a
+                  href="#"
+                  className="forgot-link"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setError(null);
+                    setInfo(null);
+                    setMode("reset");
+                  }}
+                >
+                  Forgot password?
+                </a>
+              )}
+            </div>
             <div className="password-wrap">
               <input
                 id="password"
@@ -126,6 +160,7 @@ function LoginForm() {
               </button>
             </div>
           </div>
+          )}
 
           {error && <p style={{ color: "var(--danger)", fontSize: 14 }}>{error}</p>}
           {info && <div className="banner demo" style={{ marginBottom: 12 }}>{info}</div>}
@@ -136,23 +171,46 @@ function LoginForm() {
             disabled={loading}
             style={{ width: "100%", justifyContent: "center" }}
           >
-            {loading ? "Please wait…" : mode === "signin" ? "Sign in" : "Sign up"}
+            {loading
+              ? "Please wait…"
+              : mode === "signin"
+                ? "Sign in"
+                : mode === "signup"
+                  ? "Sign up"
+                  : "Send reset link"}
           </button>
 
-          <p className="hint" style={{ textAlign: "center", marginTop: 14 }}>
-            {mode === "signin" ? "Need an account? " : "Already have an account? "}
-            <a
-              href="#"
-              onClick={(e) => {
-                e.preventDefault();
-                setError(null);
-                setInfo(null);
-                setMode(mode === "signin" ? "signup" : "signin");
-              }}
-            >
-              {mode === "signin" ? "Sign up" : "Sign in"}
-            </a>
-          </p>
+          {mode === "reset" ? (
+            <p className="hint" style={{ textAlign: "center", marginTop: 14 }}>
+              Remembered it?{" "}
+              <a
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setError(null);
+                  setInfo(null);
+                  setMode("signin");
+                }}
+              >
+                Back to sign in
+              </a>
+            </p>
+          ) : (
+            <p className="hint" style={{ textAlign: "center", marginTop: 14 }}>
+              {mode === "signin" ? "Need an account? " : "Already have an account? "}
+              <a
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setError(null);
+                  setInfo(null);
+                  setMode(mode === "signin" ? "signup" : "signin");
+                }}
+              >
+                {mode === "signin" ? "Sign up" : "Sign in"}
+              </a>
+            </p>
+          )}
 
           {!isSupabaseConfigured && (
             <p className="hint">Demo mode: any email + password works. Connect Supabase to enable real auth.</p>

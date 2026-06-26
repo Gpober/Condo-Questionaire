@@ -34,6 +34,31 @@ export default function AuthModal({
   const [info, setInfo] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
+  async function forgotPassword() {
+    setError(null);
+    setInfo(null);
+    if (!email) {
+      setError("Enter your email above first, then tap “Forgot password?”.");
+      return;
+    }
+    const supabase = getBrowserClient();
+    if (!supabase) {
+      setInfo("Demo mode: password reset requires Supabase to be connected.");
+      return;
+    }
+    setLoading(true);
+    try {
+      const redirectTo = `${window.location.origin}/auth/callback?next=${encodeURIComponent("/reset-password")}`;
+      const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo });
+      if (error) throw error;
+      setInfo("If an account exists for that email, we've sent a password reset link. Check your inbox.");
+    } catch (err: any) {
+      setError(err?.message ?? "Could not send reset link.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
@@ -140,7 +165,14 @@ export default function AuthModal({
           </div>
 
           <div className="field">
-            <label htmlFor="am-password">Password</label>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+              <label htmlFor="am-password">Password</label>
+              {mode === "signin" && (
+                <a href="#" className="forgot-link" onClick={(e) => { e.preventDefault(); forgotPassword(); }}>
+                  Forgot password?
+                </a>
+              )}
+            </div>
             <div className="password-wrap">
               <input
                 id="am-password"

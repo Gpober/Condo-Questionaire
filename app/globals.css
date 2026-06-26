@@ -314,6 +314,9 @@ input:focus, select:focus {
 .modal { background: #fff; border-radius: 18px; padding: 26px; max-width: 440px; width: 100%; box-shadow: var(--shadow-lg); }
 .modal h3 { margin: 0 0 8px; font-size: 20px; }
 .modal .actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 22px; }
+/* "Forgot password?" link next to the password label. */
+.forgot-link { font-size: 12px; font-weight: 600; color: var(--brand-dark); }
+
 /* Password field with a show/hide "eye" toggle. */
 .password-wrap { position: relative; }
 .password-wrap input { padding-right: 44px; }

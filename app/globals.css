@@ -161,7 +161,7 @@ input:focus, select:focus {
   padding: 11px 20px;
   border-radius: 11px;
   border: 1px solid transparent;
-  background: #4169e1; /* royal blue */
+  background: linear-gradient(135deg, var(--brand-start), var(--brand-end));
   color: #fff;
   font-size: 15px; font-weight: 700;
   cursor: pointer;
@@ -175,6 +175,9 @@ input:focus, select:focus {
 .btn.secondary:hover { background: #f8fafc; }
 .btn.ghost { background: transparent; color: var(--brand-dark); box-shadow: none; }
 .btn.lg { padding: 14px 26px; font-size: 16px; }
+/* Royal-blue submit button, scoped to the What's-next lead form only. */
+.btn.btn-royal { background: #4169e1; }
+.btn.btn-royal:hover { background: #355ad1; }
 /* Two-line stacked button (main label + small sub-label). */
 .btn.btn-stack { flex-direction: column; gap: 1px; line-height: 1.15; }
 .btn.btn-stack .btn-sub { font-size: 12.5px; font-weight: 600; opacity: 0.9; }

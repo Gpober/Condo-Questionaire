@@ -84,7 +84,7 @@ export default function LeadForm() {
 
       {error && <div className="banner danger" style={{ marginTop: 14 }}>{error}</div>}
 
-      <button className="btn lg" type="submit" disabled={loading} style={{ marginTop: 18, width: "100%" }}>
+      <button className="btn lg btn-royal" type="submit" disabled={loading} style={{ marginTop: 18, width: "100%" }}>
         {loading ? "Submitting…" : "Connect me with an agent"}
       </button>
       <p className="hint" style={{ textAlign: "center" }}>

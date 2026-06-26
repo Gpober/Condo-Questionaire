@@ -48,7 +48,7 @@ export default function NextStepsPage() {
 
         <div className="container narrow" style={{ padding: 0 }}>
           <h2 style={{ textAlign: "center" }}>Get matched in minutes</h2>
-          <p className="sub">Tell us a little about your purchase and we&apos;ll take it from there.</p>
+          <p className="sub">Tell us a little about your purchase or refinance and we&apos;ll take it from there.</p>
           <LeadForm />
         </div>
       </section>

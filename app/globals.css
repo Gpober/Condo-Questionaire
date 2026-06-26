@@ -257,6 +257,24 @@ input:focus, select:focus {
 /* This hero has no background photo, so drop the homepage scrim overlay. */
 .hero.ns-section { overflow: visible; }
 .hero.ns-section::before { content: none; }
+/* The What's-next hero sits on a plain light background (not a photo), so the
+   translucent "glass" eyebrow pill and faded gradient headline look washed out.
+   Make both solid "Daddy" blue (--brand-dark) on this section only. */
+.hero.ns-section .eyebrow {
+  background: var(--brand-dark);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  border-color: transparent;
+  color: #fff;
+  text-shadow: none;
+}
+.hero.ns-section h1 .grad {
+  background: none;
+  -webkit-background-clip: border-box;
+  background-clip: border-box;
+  -webkit-text-fill-color: var(--brand-dark);
+  color: var(--brand-dark);
+}
 .ns-hero {
   max-width: 1000px;
   margin: 0 auto;

@@ -82,7 +82,7 @@ export default function PrivacyPage() {
         <h2>8. Contact</h2>
         <p>
           Questions or privacy requests? Contact us at{" "}
-          <a href="mailto:privacy@hoadaddy.com">privacy@hoadaddy.com</a>.
+          <a href="mailto:gozalo@therateoutlet.com">gozalo@therateoutlet.com</a>.
         </p>
       </div>
     </>

@@ -92,7 +92,7 @@ export default function TermsPage() {
         <h2>9. Contact</h2>
         <p>
           Questions about these Terms? Contact us at{" "}
-          <a href="mailto:support@hoadaddy.com">support@hoadaddy.com</a>.
+          <a href="mailto:gozalo@therateoutlet.com">gozalo@therateoutlet.com</a>.
         </p>
       </div>
     </>

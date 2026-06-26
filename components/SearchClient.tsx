@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { searchAction } from "@/app/actions";
 import { US_STATES, stateName } from "@/lib/states";
@@ -32,6 +33,7 @@ export default function SearchClient() {
   const [signedIn, setSignedIn] = useState<boolean>(false);
   const [authOpen, setAuthOpen] = useState(false);
   const [authMode, setAuthMode] = useState<"signup" | "signin">("signup");
+  const [nudgeDismissed, setNudgeDismissed] = useState(false);
 
   useEffect(() => {
     if (!isSupabaseConfigured) {
@@ -138,6 +140,25 @@ export default function SearchClient() {
             <p className="muted">No matching condo projects found. Try fewer or broader filters.</p>
           ) : (
             <>
+              {signedIn && !nudgeDismissed && (
+                <div className="results-nudge">
+                  <span className="results-nudge-text">
+                    ✅ You&apos;re in — the full list is unlocked. Opening a condo&apos;s full record
+                    costs <strong>1 credit</strong>.
+                  </span>
+                  <span className="results-nudge-actions">
+                    <Link href="/account" className="btn sm">Buy credits</Link>
+                    <Link href="/#pricing" className="btn sm secondary">See pricing</Link>
+                    <button
+                      className="results-nudge-close"
+                      aria-label="Dismiss"
+                      onClick={() => setNudgeDismissed(true)}
+                    >
+                      ✕
+                    </button>
+                  </span>
+                </div>
+              )}
               <p className="results-count">
                 {searchedState ? `${stateName(searchedState)} — ` : ""}
                 <strong>{results.length.toLocaleString()}</strong> condo communit

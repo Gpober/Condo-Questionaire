@@ -173,6 +173,19 @@ export default function AuthModal({
           </a>
         </p>
 
+        {mode === "signup" && (
+          <p className="consent">
+            By creating an account you agree to our{" "}
+            <a href="/terms" target="_blank" rel="noopener noreferrer">Terms of Service</a> and{" "}
+            <a href="/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>, and you
+            consent to receive marketing, promotional, and informational communications — including
+            emails and, where you provide a number, calls or texts — from HOA Daddy and the mortgage
+            and real-estate partners we match you with. Consent is not a condition of any purchase.
+            Message frequency varies and message/data rates may apply. You can unsubscribe or opt out
+            at any time.
+          </p>
+        )}
+
         {!isSupabaseConfigured && (
           <p className="hint" style={{ textAlign: "center" }}>
             Demo mode: any details work. Connect Supabase to enable real auth.

@@ -219,9 +219,27 @@ input:focus, select:focus {
 /* Gate the result list: anonymous visitors see a blurred teaser of the rows
    with a "create a free account" card on top; signing in removes the gate and
    shows the full, sharp, clickable list. */
+/* Post-sign-in nudge toward buying credits / pricing. */
+.results-nudge {
+  display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap;
+  background: var(--brand-tint, #eef2ff);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+}
+.results-nudge-text { font-size: 14px; color: var(--ink); }
+.results-nudge-actions { display: flex; align-items: center; gap: 8px; }
+.btn.sm { padding: 8px 14px; font-size: 13.5px; border-radius: 9px; }
+.results-nudge-close {
+  background: none; border: none; cursor: pointer; color: var(--muted);
+  font-size: 15px; line-height: 1; padding: 6px;
+}
+.results-nudge-close:hover { color: var(--ink); }
+
 .results-wrap { position: relative; }
 .results-blur {
-  filter: blur(5px);
+  filter: blur(6px);
   user-select: none;
   -webkit-user-select: none;
   pointer-events: none;     /* clicks go to the gate overlay instead */
@@ -296,6 +314,21 @@ input:focus, select:focus {
 .modal { background: #fff; border-radius: 18px; padding: 26px; max-width: 440px; width: 100%; box-shadow: var(--shadow-lg); }
 .modal h3 { margin: 0 0 8px; font-size: 20px; }
 .modal .actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 22px; }
+/* Marketing-consent disclaimer at the bottom of the sign-up popup. */
+.consent {
+  margin: 16px 0 0;
+  font-size: 11px;
+  line-height: 1.55;
+  color: var(--muted);
+  text-align: center;
+}
+.consent a { color: var(--brand-dark); text-decoration: underline; }
+
+/* Static legal pages (Terms, Privacy). */
+.legal { padding-bottom: 60px; }
+.legal p { color: #334155; line-height: 1.7; margin: 0 0 16px; font-size: 15px; }
+.legal h2 { font-size: 18px; margin: 28px 0 8px; }
+.legal a { color: var(--brand-dark); text-decoration: underline; }
 
 /* ---------- Banners ---------- */
 .banner { padding: 12px 16px; border-radius: 12px; margin-bottom: 16px; font-size: 14px; }

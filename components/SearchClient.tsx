@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { searchAction } from "@/app/actions";
-import { US_STATES } from "@/lib/states";
+import { US_STATES, stateName } from "@/lib/states";
 import { SearchFilters, SortField, CondoSummary } from "@/lib/types";
 
 const SORT_OPTIONS: { value: SortField; label: string }[] = [
@@ -21,6 +21,9 @@ export default function SearchClient() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selected, setSelected] = useState<CondoSummary | null>(null);
+  // The state filter that produced the current results (snapshotted at search
+  // time so the count label doesn't change if the dropdown is edited after).
+  const [searchedState, setSearchedState] = useState<string>("");
 
   const set = (k: keyof SearchFilters) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
     setFilters((f) => ({ ...f, [k]: e.target.value }));
@@ -33,6 +36,7 @@ export default function SearchClient() {
       const { results, error } = await searchAction(filters, sortBy);
       if (error) setError(error);
       setResults(results);
+      setSearchedState(filters.state ?? "");
     } catch (err: any) {
       setError(err?.message ?? "Search failed.");
     } finally {
@@ -108,21 +112,25 @@ export default function SearchClient() {
             <p className="muted">No matching condo projects found. Try fewer or broader filters.</p>
           ) : (
             <>
-              <p className="muted" style={{ marginBottom: 12 }}>
-                {results.length} match{results.length === 1 ? "" : "es"} — click one to view its cached record.
+              <p className="results-count">
+                {searchedState ? `${stateName(searchedState)} — ` : ""}
+                <strong>{results.length.toLocaleString()}</strong> condo communit
+                {results.length === 1 ? "y" : "ies"} found. Tap one to view details.
               </p>
-              {results.map((p) => (
-                <div key={p.id} className="result-row" onClick={() => setSelected(p)}>
-                  <div>
-                    <div className="name">{p.project_name}</div>
-                    <div className="addr">
-                      {[p.county && `${p.county} County`, p.state, p.zip_code].filter(Boolean).join(" · ")}
-                      {`  ·  ID ${p.id}`}
+              <div className="results-blur">
+                {results.map((p) => (
+                  <div key={p.id} className="result-row" onClick={() => setSelected(p)}>
+                    <div>
+                      <div className="name">{p.project_name}</div>
+                      <div className="addr">
+                        {[p.county && `${p.county} County`, p.state, p.zip_code].filter(Boolean).join(" · ")}
+                        {`  ·  ID ${p.id}`}
+                      </div>
                     </div>
+                    <span className="chev">→</span>
                   </div>
-                  <span className="chev">→</span>
-                </div>
-              ))}
+                ))}
+              </div>
             </>
           )}
         </div>

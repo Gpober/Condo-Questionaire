@@ -206,6 +206,25 @@ input:focus, select:focus {
 .field { margin-bottom: 16px; }
 
 /* ---------- Search results ---------- */
+/* Results count line — kept fully legible (the list below is blurred behind a
+   paywall, but this stays sharp and easy to read). */
+.results-count {
+  font-size: 15.5px;
+  color: var(--ink);
+  font-weight: 600;
+  margin-bottom: 14px;
+}
+.results-count strong { color: var(--brand-dark); font-weight: 800; }
+
+/* Blur the result list so visitors can see how many matches exist but must
+   pay to read the details. Rows stay clickable (tapping opens the credit
+   prompt); text can't be selected/copied straight off the blurred list. */
+.results-blur {
+  filter: blur(5px);
+  user-select: none;
+  -webkit-user-select: none;
+}
+
 .result-row {
   display: flex; align-items: center; justify-content: space-between;
   padding: 15px 18px;

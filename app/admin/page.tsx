@@ -38,9 +38,12 @@ export default async function AdminPage() {
     <>
       <TopBar />
       <div className="container">
-        <div className="page-head">
-          <h1>Admin</h1>
-          <p>Lead CRM and condo data-audit progress.</p>
+        <div className="page-head" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", gap: 12, flexWrap: "wrap" }}>
+          <div>
+            <h1>Admin</h1>
+            <p>Lead CRM and condo data-audit progress.</p>
+          </div>
+          <Link href="/admin/analytics" className="btn">📊 Analytics</Link>
         </div>
 
         {/* ---- Data audit summary ---- */}

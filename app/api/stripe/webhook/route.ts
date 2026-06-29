@@ -50,6 +50,16 @@ export async function POST(req: NextRequest) {
       console.error("add_credits failed:", error.message);
       return NextResponse.json({ error: "Could not add credits" }, { status: 500 });
     }
+
+    // Record a conversion event for the analytics dashboard (best-effort).
+    const { error: trackErr } = await admin.from("page_views").insert({
+      event: "purchase",
+      path: "/account",
+      user_id: userId,
+    });
+    if (trackErr) {
+      console.error("purchase event insert failed:", trackErr.message);
+    }
   }
 
   return NextResponse.json({ received: true });

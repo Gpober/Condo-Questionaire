@@ -9,7 +9,14 @@ export interface AnalyticsSummary {
   views: number;
   visitors: number;
   purchases: number;
+  revenue_cents: number;
   days: number;
+}
+
+export interface PackSales {
+  label: string;
+  sales: number;
+  revenue_cents: number;
 }
 
 export interface DailyPoint {
@@ -41,14 +48,35 @@ export async function getAnalyticsSummary(days: number): Promise<AnalyticsSummar
     const views = MOCK_DAILY.reduce((s, d) => s + d.views, 0);
     const visitors = MOCK_DAILY.reduce((s, d) => s + d.visitors, 0);
     const purchases = MOCK_DAILY.reduce((s, d) => s + d.purchases, 0);
-    return { views, visitors, purchases, days };
+    return { views, visitors, purchases, revenue_cents: purchases * 5000, days };
   }
   const { data, error } = await supabase.rpc("analytics_summary", { p_days: days });
   if (error) {
     console.error("analytics_summary failed:", error.message);
-    return { views: 0, visitors: 0, purchases: 0, days };
+    return { views: 0, visitors: 0, purchases: 0, revenue_cents: 0, days };
   }
   return data as AnalyticsSummary;
+}
+
+export async function getSalesByPack(days: number): Promise<PackSales[]> {
+  const supabase = getServerClient();
+  if (!supabase) {
+    return [
+      { label: "Best value", sales: 2, revenue_cents: 20000 },
+      { label: "Popular", sales: 3, revenue_cents: 15000 },
+      { label: "Single", sales: 4, revenue_cents: 8000 },
+    ];
+  }
+  const { data, error } = await supabase.rpc("analytics_sales_by_pack", { p_days: days });
+  if (error) {
+    console.error("analytics_sales_by_pack failed:", error.message);
+    return [];
+  }
+  return (data ?? []).map((r: any) => ({
+    label: r.label,
+    sales: Number(r.sales),
+    revenue_cents: Number(r.revenue_cents),
+  }));
 }
 
 export async function getAnalyticsDaily(days: number): Promise<DailyPoint[]> {

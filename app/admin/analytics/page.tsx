@@ -7,8 +7,10 @@ import {
   getTopPaths,
   getTopReferrers,
   getTopCountries,
+  getSalesByPack,
   type Tally,
 } from "@/lib/analytics";
+import { formatUSD } from "@/lib/stripe/config";
 
 export const dynamic = "force-dynamic";
 
@@ -86,12 +88,13 @@ export default async function AnalyticsPage({
   }
 
   const days = parseDays(searchParams.days);
-  const [summary, daily, paths, referrers, countries] = await Promise.all([
+  const [summary, daily, paths, referrers, countries, salesByPack] = await Promise.all([
     getAnalyticsSummary(days),
     getAnalyticsDaily(days),
     getTopPaths(days),
     getTopReferrers(days),
     getTopCountries(days),
+    getSalesByPack(days),
   ]);
 
   const maxViews = Math.max(1, ...daily.map((d) => d.views));
@@ -147,9 +150,50 @@ export default async function AnalyticsPage({
             <span className="audit-label">Purchases</span>
           </div>
           <div className="audit-stat">
+            <span className="audit-num verified">{formatUSD(summary.revenue_cents)}</span>
+            <span className="audit-label">Revenue</span>
+          </div>
+          <div className="audit-stat">
             <span className="audit-num">{convRate.toFixed(1)}%</span>
             <span className="audit-label">Conversion</span>
           </div>
+        </div>
+
+        {/* Sales by pack — reconciles with Stripe */}
+        <div className="card" style={{ marginBottom: 26 }}>
+          <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
+            <h3 style={{ marginTop: 0, marginBottom: 0 }}>Sales by pack</h3>
+            <span className="muted" style={{ fontSize: 12 }}>Should match your Stripe payments for the same period.</span>
+          </div>
+          {summary.purchases === 0 ? (
+            <p className="muted" style={{ fontSize: 13, margin: "12px 0 0" }}>No sales yet in this window.</p>
+          ) : (
+            <div style={{ overflowX: "auto", marginTop: 12 }}>
+              <table className="admin-table">
+                <thead>
+                  <tr>
+                    <th>Pack</th>
+                    <th style={{ textAlign: "right" }}>Sales</th>
+                    <th style={{ textAlign: "right" }}>Revenue</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {salesByPack.map((p) => (
+                    <tr key={p.label}>
+                      <td>{p.label}</td>
+                      <td style={{ textAlign: "right", fontVariantNumeric: "tabular-nums" }}>{p.sales.toLocaleString()}</td>
+                      <td style={{ textAlign: "right", fontVariantNumeric: "tabular-nums" }}>{formatUSD(p.revenue_cents)}</td>
+                    </tr>
+                  ))}
+                  <tr style={{ fontWeight: 700, borderTop: "2px solid rgba(0,0,0,0.1)" }}>
+                    <td>Total</td>
+                    <td style={{ textAlign: "right", fontVariantNumeric: "tabular-nums" }}>{summary.purchases.toLocaleString()}</td>
+                    <td style={{ textAlign: "right", fontVariantNumeric: "tabular-nums" }}>{formatUSD(summary.revenue_cents)}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
 
         {/* Views over time */}

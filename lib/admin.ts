@@ -34,6 +34,9 @@ export interface Member {
   name: string | null;
   created_at: string | null;
   last_sign_in_at: string | null;
+  credit_balance: number;
+  purchases: number;
+  total_spent_cents: number;
 }
 
 // Everyone who has created a login (Supabase auth users). Requires the
@@ -59,10 +62,40 @@ export async function getMembers(): Promise<Member[]> {
         name,
         created_at: u.created_at ?? null,
         last_sign_in_at: u.last_sign_in_at ?? null,
+        credit_balance: 0,
+        purchases: 0,
+        total_spent_cents: 0,
       });
     }
     if (users.length < perPage) break;
   }
+
+  // Enrich each member with their credit balance and purchase history.
+  const balanceById = new Map<string, number>();
+  const { data: profiles } = await admin.from("profiles").select("id, credit_balance");
+  for (const p of profiles ?? []) balanceById.set(p.id as string, Number(p.credit_balance ?? 0));
+
+  const buysById = new Map<string, { count: number; cents: number }>();
+  const { data: buys } = await admin
+    .from("page_views")
+    .select("user_id, amount_cents")
+    .eq("event", "purchase");
+  for (const b of buys ?? []) {
+    const uid = b.user_id as string | null;
+    if (!uid) continue;
+    const agg = buysById.get(uid) ?? { count: 0, cents: 0 };
+    agg.count += 1;
+    agg.cents += Number(b.amount_cents ?? 0);
+    buysById.set(uid, agg);
+  }
+
+  for (const m of members) {
+    m.credit_balance = balanceById.get(m.id) ?? 0;
+    const agg = buysById.get(m.id);
+    m.purchases = agg?.count ?? 0;
+    m.total_spent_cents = agg?.cents ?? 0;
+  }
+
   members.sort((a, b) => (b.created_at ?? "").localeCompare(a.created_at ?? ""));
   return members;
 }

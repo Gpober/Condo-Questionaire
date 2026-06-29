@@ -4,6 +4,7 @@ import AdminLeads from "@/components/AdminLeads";
 import { isAdmin, getLeads, getMembers } from "@/lib/admin";
 import { getReviewSummary } from "@/lib/reviews";
 import AuditExport from "@/components/AuditExport";
+import { formatUSD } from "@/lib/stripe/config";
 
 export const dynamic = "force-dynamic";
 
@@ -138,7 +139,7 @@ export default async function AdminPage() {
         {/* ---- Members (everyone who created a login) ---- */}
         <div className="page-head" style={{ marginTop: 30 }}>
           <h2 style={{ margin: 0 }}>Members</h2>
-          <p>Everyone who created a login to view the list ({members.length.toLocaleString()}).</p>
+          <p>Everyone who created a login ({members.length.toLocaleString()}) — with credit balance and purchase history.</p>
         </div>
         {members.length > 0 ? (
           <div style={{ overflowX: "auto", marginBottom: 30 }}>
@@ -149,17 +150,26 @@ export default async function AdminPage() {
                   <th>Email</th>
                   <th>Joined</th>
                   <th>Last sign-in</th>
+                  <th style={{ textAlign: "right" }}>Credits</th>
+                  <th style={{ textAlign: "right" }}>Purchases</th>
+                  <th style={{ textAlign: "right" }}>Spent</th>
                 </tr>
               </thead>
               <tbody>
-                {members.map((m) => (
-                  <tr key={m.id}>
-                    <td>{m.name ?? "—"}</td>
-                    <td>{m.email ?? "—"}</td>
-                    <td>{fmt(m.created_at)}</td>
-                    <td>{fmt(m.last_sign_in_at)}</td>
-                  </tr>
-                ))}
+                {members.map((m) => {
+                  const num = { textAlign: "right" as const, fontVariantNumeric: "tabular-nums" as const };
+                  return (
+                    <tr key={m.id}>
+                      <td>{m.name ?? "—"}</td>
+                      <td>{m.email ?? "—"}</td>
+                      <td>{fmt(m.created_at)}</td>
+                      <td>{fmt(m.last_sign_in_at)}</td>
+                      <td style={num}>{m.credit_balance.toLocaleString()}</td>
+                      <td style={num}>{m.purchases.toLocaleString()}</td>
+                      <td style={num}>{m.total_spent_cents > 0 ? formatUSD(m.total_spent_cents) : "—"}</td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

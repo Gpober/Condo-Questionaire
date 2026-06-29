@@ -1,8 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { buyCreditsAction, grantTestCreditsAction } from "@/app/actions/credits";
+import { buyCreditsAction } from "@/app/actions/credits";
 import { CreditPack, formatUSD } from "@/lib/stripe/config";
 
 export default function AccountClient({
@@ -14,8 +13,7 @@ export default function AccountClient({
   packs: CreditPack[];
   stripeReady: boolean;
 }) {
-  const router = useRouter();
-  const [bal, setBal] = useState(balance);
+  const [bal] = useState(balance);
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -29,17 +27,6 @@ export default function AccountClient({
         return;
       }
       setError(error ?? "Could not start checkout.");
-    } finally {
-      setBusy(null);
-    }
-  }
-
-  async function grantTest(amount: number) {
-    setBusy("test");
-    try {
-      const newBal = await grantTestCreditsAction(amount);
-      setBal(newBal);
-      router.refresh();
     } finally {
       setBusy(null);
     }
@@ -79,13 +66,8 @@ export default function AccountClient({
 
       {!stripeReady && (
         <div className="banner demo" style={{ marginTop: 20 }}>
-          <strong>Payments aren&apos;t connected yet.</strong> Add your Stripe keys to enable real
-          checkout. Meanwhile, grant yourself test credits to try the flow:
-          <div style={{ marginTop: 10 }}>
-            <button className="btn secondary" onClick={() => grantTest(5)} disabled={busy !== null}>
-              + 5 test credits
-            </button>
-          </div>
+          <strong>Payments aren&apos;t connected yet.</strong> Add your Stripe keys to enable
+          checkout.
         </div>
       )}
     </div>

@@ -65,17 +65,3 @@ export async function redeemCredit(projectId: string): Promise<RedeemResult> {
   }
   return data as RedeemResult;
 }
-
-// TEMPORARY: grant test credits to the current user (until Stripe is live).
-export async function grantTestCredits(amount: number): Promise<number> {
-  const supabase = getServerClient();
-  if (!supabase) return 0;
-  const { data, error } = await supabase.rpc("grant_test_credits", {
-    p_amount: amount,
-  });
-  if (error) {
-    console.error("grantTestCredits failed:", error.message);
-    return 0;
-  }
-  return (data as number) ?? 0;
-}

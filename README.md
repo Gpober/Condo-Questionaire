@@ -82,8 +82,7 @@ is free.
 
 - DB: run `supabase/credits-setup.sql` (profiles + balance, lookups/unlocks,
   atomic `redeem_credit` RPC, `add_credits` for the webhook, RLS, and a
-  signup trigger). It also includes a temporary `grant_test_credits` helper —
-  **remove it before real launch.**
+  signup trigger).
 - Buy credits on `/account` (3 packs in `lib/stripe/config.ts`).
 - **Stripe Checkout is implemented.** Packs are sold via dynamic `price_data`,
   so no pre-created Stripe Price IDs are required — just edit the packs.
@@ -102,8 +101,8 @@ is free.
 Flow: `/account` → Buy → Stripe Checkout → on success the webhook calls the
 `add_credits` RPC (service role) to top up the user's balance.
 
-Until `STRIPE_SECRET_KEY` is set, the **“+5 test credits”** button on `/account`
-lets you exercise the credit flow without paying.
+Until `STRIPE_SECRET_KEY` is set, `/account` shows a "Payments aren't connected
+yet" notice and the Buy buttons return a friendly error instead of charging.
 
 ## Not yet built (next steps)
 

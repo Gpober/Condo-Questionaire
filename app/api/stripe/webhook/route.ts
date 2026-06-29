@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import type Stripe from "stripe";
-import { isStripeConfigured, STRIPE_WEBHOOK_SECRET } from "@/lib/stripe/config";
+import { isStripeConfigured, STRIPE_WEBHOOK_SECRET, CREDIT_PACKS } from "@/lib/stripe/config";
 import { getStripe } from "@/lib/stripe/server";
 import { getAdminClient } from "@/lib/supabase/admin";
 
@@ -52,10 +52,15 @@ export async function POST(req: NextRequest) {
     }
 
     // Record a conversion event for the analytics dashboard (best-effort).
+    // Capture the amount and pack so HOA Daddy reconciles with Stripe.
+    const packId = session.metadata?.packId;
+    const pack = CREDIT_PACKS.find((p) => p.id === packId);
     const { error: trackErr } = await admin.from("page_views").insert({
       event: "purchase",
       path: "/account",
       user_id: userId,
+      amount_cents: session.amount_total ?? null,
+      label: pack?.label ?? packId ?? null,
     });
     if (trackErr) {
       console.error("purchase event insert failed:", trackErr.message);

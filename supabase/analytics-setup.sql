@@ -12,6 +12,8 @@ create table if not exists public.page_views (
   country text,
   session_id text,
   user_id uuid,
+  amount_cents integer,                      -- purchase amount (purchase events)
+  label text,                                -- pack label (purchase events)
   created_at timestamptz not null default now()
 );
 
@@ -40,6 +42,7 @@ begin
     'views', count(*) filter (where event = 'pageview'),
     'visitors', count(distinct session_id) filter (where event = 'pageview'),
     'purchases', count(*) filter (where event = 'purchase'),
+    'revenue_cents', coalesce(sum(amount_cents) filter (where event = 'purchase'), 0),
     'days', greatest(p_days, 1)
   )
   into result
@@ -151,3 +154,28 @@ end;
 $$;
 
 grant execute on function public.analytics_top_countries(integer, integer) to authenticated;
+
+-- 7) analytics_sales_by_pack: revenue + count per pack (mirrors Stripe) -------
+create or replace function public.analytics_sales_by_pack(p_days integer default 30)
+returns table (label text, sales bigint, revenue_cents bigint)
+language plpgsql stable security definer set search_path = public
+as $$
+declare
+  since timestamptz := now() - make_interval(days => greatest(p_days, 1));
+begin
+  if not public.is_admin() then
+    raise exception 'not authorized';
+  end if;
+
+  return query
+  select coalesce(pv.label, '(unknown)') as label,
+         count(*) as sales,
+         coalesce(sum(pv.amount_cents), 0) as revenue_cents
+  from page_views pv
+  where pv.created_at >= since and pv.event = 'purchase'
+  group by 1
+  order by revenue_cents desc;
+end;
+$$;
+
+grant execute on function public.analytics_sales_by_pack(integer) to authenticated;

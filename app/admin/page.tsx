@@ -47,7 +47,7 @@ export default async function AdminPage() {
 
         {/* ---- Data audit summary ---- */}
         <div className="card" style={{ marginBottom: 26 }}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10 }}>
             <h3 style={{ margin: 0 }}>Data audit</h3>
             <AuditExport needsList={audit.needsList} expired={audit.expired} />
           </div>

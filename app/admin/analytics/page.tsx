@@ -293,10 +293,8 @@ export default async function AnalyticsPage({
         <SectionHeading title="📣 Marketing" subtitle="Where traffic comes from and which sources drive revenue." />
 
         <div className="card" style={{ marginBottom: 20 }}>
-          <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
-            <h3 style={{ marginTop: 0, marginBottom: 0 }}>Channels</h3>
-            <span className="muted" style={{ fontSize: 12 }}>Tap a channel for the underlying visits &amp; sales.</span>
-          </div>
+          <h3 style={{ marginTop: 0, marginBottom: 4 }}>Channels</h3>
+          <p className="muted" style={{ fontSize: 12, marginTop: 0, textAlign: "center" }}>Tap a channel for the underlying visits &amp; sales.</p>
           <div style={{ marginTop: 12 }}>
             <AttribTable rows={channels} firstCol="Channel" metric="channel" days={days} />
           </div>
@@ -305,7 +303,7 @@ export default async function AnalyticsPage({
         <div style={{ display: "grid", gap: 20, gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))" }}>
           <div className="card">
             <h3 style={{ marginTop: 0 }}>Campaigns (UTM)</h3>
-            <p className="muted" style={{ fontSize: 12, marginTop: 0 }}>
+            <p className="muted" style={{ fontSize: 12, marginTop: 0, textAlign: "center" }}>
               Tag links with <code>?utm_source=&amp;utm_medium=&amp;utm_campaign=</code> to track them here.
             </p>
             <AttribTable rows={campaigns} firstCol="Campaign" metric="campaign" days={days} />

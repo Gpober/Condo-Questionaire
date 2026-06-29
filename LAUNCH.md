@@ -43,7 +43,8 @@ After changing env vars, **redeploy** so they take effect.
 
 1. Stripe Dashboard → **Developers → Webhooks → Add endpoint**.
 2. Endpoint URL: `https://YOUR_DOMAIN/api/stripe/webhook`
-3. Subscribe to event: **`checkout.session.completed`**
+3. Subscribe to events: **`checkout.session.completed`** (credits the buyer)
+   and **`charge.refunded`** (records refunds in financial analytics)
 4. Copy the endpoint's **Signing secret** (`whsec_...`) into
    `STRIPE_WEBHOOK_SECRET` (step 2), then redeploy.
 

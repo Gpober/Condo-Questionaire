@@ -21,7 +21,15 @@ export default function AccountClient({
     setBusy(packId);
     setError(null);
     try {
-      const { url, error } = await buyCreditsAction(packId);
+      // Pass the anonymous session id so the purchase can be attributed to the
+      // visitor's traffic channel (last-touch) in analytics.
+      let sessionId: string | null = null;
+      try {
+        sessionId = sessionStorage.getItem("hd_sid");
+      } catch {
+        /* ignore */
+      }
+      const { url, error } = await buyCreditsAction(packId, sessionId);
       if (url) {
         window.location.href = url; // off to Stripe Checkout
         return;

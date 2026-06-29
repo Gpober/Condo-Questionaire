@@ -29,10 +29,14 @@ export default function Analytics() {
   useEffect(() => {
     if (!pathname) return;
 
+    const params = new URLSearchParams(window.location.search);
     const payload = JSON.stringify({
       path: pathname,
       referrer: document.referrer || "",
       sessionId: getSessionId(),
+      utmSource: params.get("utm_source") || "",
+      utmMedium: params.get("utm_medium") || "",
+      utmCampaign: params.get("utm_campaign") || "",
     });
 
     // Prefer sendBeacon so it survives navigation; fall back to fetch.

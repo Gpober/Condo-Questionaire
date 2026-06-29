@@ -26,7 +26,8 @@ function siteOrigin(): string {
 
 // Start a Stripe Checkout session to buy a credit pack.
 export async function buyCreditsAction(
-  packId: string
+  packId: string,
+  sessionId?: string | null
 ): Promise<{ url: string | null; error: string | null }> {
   const pack = CREDIT_PACKS.find((p) => p.id === packId);
   if (!pack) return { url: null, error: "Unknown credit pack." };
@@ -60,9 +61,9 @@ export async function buyCreditsAction(
           },
         },
       ],
-      // The webhook reads these to credit the right user.
+      // The webhook reads these to credit the right user and attribute the sale.
       client_reference_id: userId,
-      metadata: { userId, credits: String(pack.credits), packId: pack.id },
+      metadata: { userId, credits: String(pack.credits), packId: pack.id, sessionId: sessionId ?? "" },
       payment_intent_data: {
         metadata: { userId, credits: String(pack.credits), packId: pack.id },
       },

@@ -153,6 +153,7 @@ export default async function AdminPage() {
                   <th style={{ textAlign: "right" }}>Credits</th>
                   <th style={{ textAlign: "right" }}>Purchases</th>
                   <th style={{ textAlign: "right" }}>Spent</th>
+                  <th>Last purchase</th>
                 </tr>
               </thead>
               <tbody>
@@ -167,6 +168,7 @@ export default async function AdminPage() {
                       <td style={num}>{m.credit_balance.toLocaleString()}</td>
                       <td style={num}>{m.purchases.toLocaleString()}</td>
                       <td style={num}>{m.total_spent_cents > 0 ? formatUSD(m.total_spent_cents) : "—"}</td>
+                      <td>{fmt(m.last_purchase_at)}</td>
                     </tr>
                   );
                 })}

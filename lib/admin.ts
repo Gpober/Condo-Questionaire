@@ -37,6 +37,7 @@ export interface Member {
   credit_balance: number;
   purchases: number;
   total_spent_cents: number;
+  last_purchase_at: string | null;
 }
 
 // Everyone who has created a login (Supabase auth users). Requires the
@@ -65,6 +66,7 @@ export async function getMembers(): Promise<Member[]> {
         credit_balance: 0,
         purchases: 0,
         total_spent_cents: 0,
+        last_purchase_at: null,
       });
     }
     if (users.length < perPage) break;
@@ -75,17 +77,19 @@ export async function getMembers(): Promise<Member[]> {
   const { data: profiles } = await admin.from("profiles").select("id, credit_balance");
   for (const p of profiles ?? []) balanceById.set(p.id as string, Number(p.credit_balance ?? 0));
 
-  const buysById = new Map<string, { count: number; cents: number }>();
+  const buysById = new Map<string, { count: number; cents: number; last: string | null }>();
   const { data: buys } = await admin
     .from("page_views")
-    .select("user_id, amount_cents")
+    .select("user_id, amount_cents, created_at")
     .eq("event", "purchase");
   for (const b of buys ?? []) {
     const uid = b.user_id as string | null;
     if (!uid) continue;
-    const agg = buysById.get(uid) ?? { count: 0, cents: 0 };
+    const agg = buysById.get(uid) ?? { count: 0, cents: 0, last: null };
     agg.count += 1;
     agg.cents += Number(b.amount_cents ?? 0);
+    const ts = (b.created_at as string | null) ?? null;
+    if (ts && (!agg.last || ts > agg.last)) agg.last = ts;
     buysById.set(uid, agg);
   }
 
@@ -94,6 +98,7 @@ export async function getMembers(): Promise<Member[]> {
     const agg = buysById.get(m.id);
     m.purchases = agg?.count ?? 0;
     m.total_spent_cents = agg?.cents ?? 0;
+    m.last_purchase_at = agg?.last ?? null;
   }
 
   members.sort((a, b) => (b.created_at ?? "").localeCompare(a.created_at ?? ""));

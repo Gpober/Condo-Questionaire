@@ -51,7 +51,7 @@ export default function ResetPasswordPage() {
       if (error) throw error;
       setDone(true);
       setTimeout(() => {
-        router.replace("/search");
+        router.replace("/account");
         router.refresh();
       }, 1400);
     } catch (err: any) {
@@ -71,9 +71,9 @@ export default function ResetPasswordPage() {
 
           {done ? (
             <>
-              <p className="sub">✅ Your password has been updated. Redirecting you to search…</p>
-              <Link href="/search" className="btn" style={{ width: "100%", justifyContent: "center" }}>
-                Continue
+              <p className="sub">✅ Your password has been updated — you&apos;re signed in. Taking you to your account…</p>
+              <Link href="/account" className="btn" style={{ width: "100%", justifyContent: "center" }}>
+                Go to my account
               </Link>
             </>
           ) : !ready ? (

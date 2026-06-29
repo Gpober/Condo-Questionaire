@@ -26,6 +26,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
   }
 
+  const admin = getAdminClient();
+
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session;
     const userId = session.metadata?.userId ?? session.client_reference_id ?? undefined;
@@ -36,7 +38,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ received: true });
     }
 
-    const admin = getAdminClient();
     if (!admin) {
       console.error("Webhook: SUPABASE_SERVICE_ROLE_KEY not set; cannot credit user");
       return NextResponse.json({ error: "Server not configured" }, { status: 500 });
@@ -51,8 +52,25 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Could not add credits" }, { status: 500 });
     }
 
-    // Record a conversion event for the analytics dashboard (best-effort).
-    // Capture the amount and pack so HOA Daddy reconciles with Stripe.
+    // Last-touch attribution: copy the buyer's channel/campaign from their most
+    // recent pageview (matched by the anonymous session id passed at checkout).
+    let channel: string | null = null;
+    let utm_campaign: string | null = null;
+    const sessionId = session.metadata?.sessionId;
+    if (sessionId) {
+      const { data: touch } = await admin
+        .from("page_views")
+        .select("channel, utm_campaign")
+        .eq("session_id", sessionId)
+        .eq("event", "pageview")
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      channel = touch?.channel ?? null;
+      utm_campaign = touch?.utm_campaign ?? null;
+    }
+
+    // Record the conversion with amount + pack so HOA Daddy reconciles with Stripe.
     const packId = session.metadata?.packId;
     const pack = CREDIT_PACKS.find((p) => p.id === packId);
     const { error: trackErr } = await admin.from("page_views").insert({
@@ -61,9 +79,28 @@ export async function POST(req: NextRequest) {
       user_id: userId,
       amount_cents: session.amount_total ?? null,
       label: pack?.label ?? packId ?? null,
+      channel,
+      utm_campaign,
     });
     if (trackErr) {
       console.error("purchase event insert failed:", trackErr.message);
+    }
+  } else if (event.type === "charge.refunded") {
+    // Record refunds so financial analytics can net them out.
+    const charge = event.data.object as Stripe.Charge;
+    const packId = charge.metadata?.packId;
+    const pack = CREDIT_PACKS.find((p) => p.id === packId);
+    if (admin) {
+      const { error: refErr } = await admin.from("page_views").insert({
+        event: "refund",
+        path: "/account",
+        user_id: charge.metadata?.userId ?? null,
+        amount_cents: charge.amount_refunded ?? null,
+        label: pack?.label ?? packId ?? null,
+      });
+      if (refErr) {
+        console.error("refund event insert failed:", refErr.message);
+      }
     }
   }
 

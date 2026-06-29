@@ -10,6 +10,8 @@ export interface AnalyticsSummary {
   visitors: number;
   purchases: number;
   revenue_cents: number;
+  refunds: number;
+  refunds_cents: number;
   days: number;
 }
 
@@ -31,6 +33,21 @@ export interface DailyPoint {
   views: number;
   visitors: number;
   purchases: number;
+  revenue_cents: number;
+}
+
+export interface ChannelRow {
+  channel: string;
+  views: number;
+  sales: number;
+  revenue_cents: number;
+}
+
+export interface CampaignRow {
+  campaign: string;
+  views: number;
+  sales: number;
+  revenue_cents: number;
 }
 
 export interface Tally {
@@ -41,11 +58,13 @@ export interface Tally {
 const MOCK_DAILY: DailyPoint[] = Array.from({ length: 14 }, (_, i) => {
   const d = new Date(Date.now() - (13 - i) * 86400000);
   const views = 40 + Math.round(30 * Math.sin(i / 2) + i * 4);
+  const purchases = i % 4 === 0 ? 1 : 0;
   return {
     day: d.toISOString().slice(0, 10),
     views,
     visitors: Math.round(views * 0.7),
-    purchases: i % 4 === 0 ? 1 : 0,
+    purchases,
+    revenue_cents: purchases * 5000,
   };
 });
 
@@ -55,12 +74,12 @@ export async function getAnalyticsSummary(days: number): Promise<AnalyticsSummar
     const views = MOCK_DAILY.reduce((s, d) => s + d.views, 0);
     const visitors = MOCK_DAILY.reduce((s, d) => s + d.visitors, 0);
     const purchases = MOCK_DAILY.reduce((s, d) => s + d.purchases, 0);
-    return { views, visitors, purchases, revenue_cents: purchases * 5000, days };
+    return { views, visitors, purchases, revenue_cents: purchases * 5000, refunds: 0, refunds_cents: 0, days };
   }
   const { data, error } = await supabase.rpc("analytics_summary", { p_days: days });
   if (error) {
     console.error("analytics_summary failed:", error.message);
-    return { views: 0, visitors: 0, purchases: 0, revenue_cents: 0, days };
+    return { views: 0, visitors: 0, purchases: 0, revenue_cents: 0, refunds: 0, refunds_cents: 0, days };
   }
   return data as AnalyticsSummary;
 }
@@ -122,6 +141,7 @@ export async function getAnalyticsDaily(days: number): Promise<DailyPoint[]> {
     views: Number(r.views),
     visitors: Number(r.visitors),
     purchases: Number(r.purchases),
+    revenue_cents: Number(r.revenue_cents),
   }));
 }
 
@@ -164,4 +184,64 @@ export function getTopCountries(days: number, limit = 10): Promise<Tally[]> {
     { label: "CA", views: 52 },
     { label: "GB", views: 18 },
   ]);
+}
+
+export function getTopDevices(days: number, limit = 10): Promise<Tally[]> {
+  return topTally("analytics_top_devices", "device", days, limit, [
+    { label: "Desktop", views: 280 },
+    { label: "Mobile", views: 240 },
+    { label: "Tablet", views: 30 },
+  ]);
+}
+
+export function getTopBrowsers(days: number, limit = 10): Promise<Tally[]> {
+  return topTally("analytics_top_browsers", "browser", days, limit, [
+    { label: "Chrome", views: 320 },
+    { label: "Safari", views: 180 },
+    { label: "Firefox", views: 28 },
+  ]);
+}
+
+export async function getChannels(days: number): Promise<ChannelRow[]> {
+  const supabase = getServerClient();
+  if (!supabase) {
+    return [
+      { channel: "Organic Search", views: 260, sales: 4, revenue_cents: 18000 },
+      { channel: "Direct", views: 180, sales: 3, revenue_cents: 12000 },
+      { channel: "Social", views: 90, sales: 2, revenue_cents: 7000 },
+      { channel: "Paid Search", views: 40, sales: 1, revenue_cents: 5000 },
+    ];
+  }
+  const { data, error } = await supabase.rpc("analytics_channels", { p_days: days });
+  if (error) {
+    console.error("analytics_channels failed:", error.message);
+    return [];
+  }
+  return (data ?? []).map((r: any) => ({
+    channel: r.channel,
+    views: Number(r.views),
+    sales: Number(r.sales),
+    revenue_cents: Number(r.revenue_cents),
+  }));
+}
+
+export async function getTopCampaigns(days: number, limit = 10): Promise<CampaignRow[]> {
+  const supabase = getServerClient();
+  if (!supabase) {
+    return [
+      { campaign: "spring-launch", views: 120, sales: 3, revenue_cents: 13000 },
+      { campaign: "(none)", views: 380, sales: 5, revenue_cents: 22000 },
+    ];
+  }
+  const { data, error } = await supabase.rpc("analytics_top_campaigns", { p_days: days, p_limit: limit });
+  if (error) {
+    console.error("analytics_top_campaigns failed:", error.message);
+    return [];
+  }
+  return (data ?? []).map((r: any) => ({
+    campaign: r.campaign,
+    views: Number(r.views),
+    sales: Number(r.sales),
+    revenue_cents: Number(r.revenue_cents),
+  }));
 }

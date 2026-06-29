@@ -111,20 +111,5 @@ begin
 end;
 $$;
 
--- 5) grant_test_credits: TEMPORARY helper so you can exercise the flow before
---    Stripe is wired. REMOVE (or revoke) before real launch.
-create or replace function public.grant_test_credits(p_amount integer)
-returns integer
-language plpgsql
-security definer set search_path = public
-as $$
-declare
-  bal integer;
-begin
-  if auth.uid() is null then return null; end if;
-  update profiles set credit_balance = credit_balance + p_amount
-   where id = auth.uid()
-   returning credit_balance into bal;
-  return bal;
-end;
-$$;
+-- The temporary grant_test_credits() helper has been removed for launch. If an
+-- old deploy still has it, drop it: drop function if exists public.grant_test_credits(integer);

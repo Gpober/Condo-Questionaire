@@ -80,15 +80,12 @@ Notes:
 
 ---
 
-## 6. Before real launch — remove test helpers
+## 6. Test helpers removed ✅
 
-The credit system ships with a temporary "grant test credits" path so you can
-exercise the flow before Stripe is live. **Remove it before taking real money:**
-
-- In Supabase, drop the helper:
-  `drop function if exists public.grant_test_credits(integer);`
-- In code, remove `grantTestCreditsAction` from `app/actions/credits.ts` and any
-  UI button that calls it (search the repo for `grantTestCredits`).
+The temporary "grant test credits" backdoor has been removed — from the code
+(`grantTestCredits` / `grantTestCreditsAction` and the `/account` button) and
+from the database (`grant_test_credits` function dropped). No further action
+needed; credits can now only be added by a real Stripe purchase via the webhook.
 
 ---
 
@@ -101,5 +98,5 @@ exercise the flow before Stripe is live. **Remove it before taking real money:**
 - [ ] `STRIPE_WEBHOOK_SECRET` copied in + redeployed
 - [ ] Test purchase succeeds and credits land
 - [ ] Analytics dashboard shows traffic
-- [ ] Test-credit helper removed
+- [x] Test-credit helper removed
 - [ ] Switched Stripe from test keys to live keys

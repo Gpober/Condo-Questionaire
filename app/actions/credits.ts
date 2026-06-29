@@ -2,7 +2,7 @@
 
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
-import { redeemCredit, grantTestCredits, getUserId, RedeemResult } from "@/lib/credits";
+import { redeemCredit, getUserId, RedeemResult } from "@/lib/credits";
 import { CREDIT_PACKS, isStripeConfigured } from "@/lib/stripe/config";
 import { getStripe } from "@/lib/stripe/server";
 
@@ -13,13 +13,6 @@ export async function redeemAction(projectId: string): Promise<RedeemResult> {
     revalidatePath(`/project/${projectId}`);
   }
   return result;
-}
-
-// TEMPORARY: grant test credits while Stripe isn't live yet.
-export async function grantTestCreditsAction(amount: number): Promise<number> {
-  const balance = await grantTestCredits(amount);
-  revalidatePath("/account");
-  return balance;
 }
 
 // Best-effort site origin for Stripe redirect URLs.

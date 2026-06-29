@@ -19,6 +19,13 @@ export interface PackSales {
   revenue_cents: number;
 }
 
+export interface PurchaseRow {
+  created_at: string;
+  email: string | null;
+  label: string;
+  amount_cents: number | null;
+}
+
 export interface DailyPoint {
   day: string;
   views: number;
@@ -56,6 +63,29 @@ export async function getAnalyticsSummary(days: number): Promise<AnalyticsSummar
     return { views: 0, visitors: 0, purchases: 0, revenue_cents: 0, days };
   }
   return data as AnalyticsSummary;
+}
+
+export async function getRecentPurchases(days: number, limit = 100): Promise<PurchaseRow[]> {
+  const supabase = getServerClient();
+  if (!supabase) {
+    const now = Date.UTC(2026, 5, 29);
+    return [
+      { created_at: new Date(now - 1 * 3600000).toISOString(), email: "buyer1@example.com", label: "Best value", amount_cents: 10000 },
+      { created_at: new Date(now - 5 * 3600000).toISOString(), email: "buyer2@example.com", label: "Popular", amount_cents: 5000 },
+      { created_at: new Date(now - 26 * 3600000).toISOString(), email: "buyer3@example.com", label: "Single", amount_cents: 2000 },
+    ];
+  }
+  const { data, error } = await supabase.rpc("analytics_recent_purchases", { p_days: days, p_limit: limit });
+  if (error) {
+    console.error("analytics_recent_purchases failed:", error.message);
+    return [];
+  }
+  return (data ?? []).map((r: any) => ({
+    created_at: r.created_at,
+    email: r.email,
+    label: r.label,
+    amount_cents: r.amount_cents === null ? null : Number(r.amount_cents),
+  }));
 }
 
 export async function getSalesByPack(days: number): Promise<PackSales[]> {

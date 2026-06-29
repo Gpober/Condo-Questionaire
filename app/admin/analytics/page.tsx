@@ -8,6 +8,7 @@ import {
   getTopReferrers,
   getTopCountries,
   getSalesByPack,
+  getRecentPurchases,
   type Tally,
 } from "@/lib/analytics";
 import { formatUSD } from "@/lib/stripe/config";
@@ -88,14 +89,23 @@ export default async function AnalyticsPage({
   }
 
   const days = parseDays(searchParams.days);
-  const [summary, daily, paths, referrers, countries, salesByPack] = await Promise.all([
+  const [summary, daily, paths, referrers, countries, salesByPack, purchases] = await Promise.all([
     getAnalyticsSummary(days),
     getAnalyticsDaily(days),
     getTopPaths(days),
     getTopReferrers(days),
     getTopCountries(days),
     getSalesByPack(days),
+    getRecentPurchases(days),
   ]);
+
+  const fmtDateTime = (iso: string) =>
+    new Date(iso).toLocaleString(undefined, {
+      month: "short",
+      day: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+    });
 
   const maxViews = Math.max(1, ...daily.map((d) => d.views));
   const convRate =
@@ -190,6 +200,39 @@ export default async function AnalyticsPage({
                     <td style={{ textAlign: "right", fontVariantNumeric: "tabular-nums" }}>{summary.purchases.toLocaleString()}</td>
                     <td style={{ textAlign: "right", fontVariantNumeric: "tabular-nums" }}>{formatUSD(summary.revenue_cents)}</td>
                   </tr>
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+
+        {/* Recent purchases — who bought what */}
+        <div className="card" style={{ marginBottom: 26 }}>
+          <h3 style={{ marginTop: 0 }}>Recent purchases</h3>
+          {purchases.length === 0 ? (
+            <p className="muted" style={{ fontSize: 13, margin: "12px 0 0" }}>No purchases yet in this window.</p>
+          ) : (
+            <div style={{ overflowX: "auto", marginTop: 12 }}>
+              <table className="admin-table">
+                <thead>
+                  <tr>
+                    <th>Customer</th>
+                    <th>Pack</th>
+                    <th style={{ textAlign: "right" }}>Amount</th>
+                    <th style={{ textAlign: "right" }}>When</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {purchases.map((p, i) => (
+                    <tr key={`${p.created_at}-${i}`}>
+                      <td>{p.email ?? "—"}</td>
+                      <td>{p.label}</td>
+                      <td style={{ textAlign: "right", fontVariantNumeric: "tabular-nums" }}>
+                        {p.amount_cents === null ? "—" : formatUSD(p.amount_cents)}
+                      </td>
+                      <td style={{ textAlign: "right", whiteSpace: "nowrap" }}>{fmtDateTime(p.created_at)}</td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>

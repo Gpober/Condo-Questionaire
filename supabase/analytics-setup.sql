@@ -179,3 +179,30 @@ end;
 $$;
 
 grant execute on function public.analytics_sales_by_pack(integer) to authenticated;
+
+-- 8) analytics_recent_purchases: per-user purchase log (who bought what) ------
+create or replace function public.analytics_recent_purchases(p_days integer default 30, p_limit integer default 100)
+returns table (created_at timestamptz, email text, label text, amount_cents integer)
+language plpgsql stable security definer set search_path = public
+as $$
+declare
+  since timestamptz := now() - make_interval(days => greatest(p_days, 1));
+begin
+  if not public.is_admin() then
+    raise exception 'not authorized';
+  end if;
+
+  return query
+  select pv.created_at,
+         p.email,
+         coalesce(pv.label, '(unknown)') as label,
+         pv.amount_cents
+  from page_views pv
+  left join profiles p on p.id = pv.user_id
+  where pv.event = 'purchase' and pv.created_at >= since
+  order by pv.created_at desc
+  limit greatest(p_limit, 1);
+end;
+$$;
+
+grant execute on function public.analytics_recent_purchases(integer, integer) to authenticated;

@@ -137,6 +137,9 @@ h1, h2, h3 { letter-spacing: -0.02em; }
   box-shadow: var(--shadow-sm);
 }
 .card.glow { box-shadow: var(--shadow-md); }
+/* Center all headings/titles throughout the platform. */
+.container h1, .container h2, .container h3, .container h4,
+.card h2, .card h3, .card h4 { text-align: center; }
 
 /* ---------- Forms ---------- */
 label { display: block; font-size: 12.5px; font-weight: 600; color: var(--muted); margin-bottom: 6px; }

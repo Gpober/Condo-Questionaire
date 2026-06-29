@@ -29,14 +29,34 @@ export default function Analytics() {
   useEffect(() => {
     if (!pathname) return;
 
-    const params = new URLSearchParams(window.location.search);
+    // First-touch UTM: capture the campaign from the landing URL and keep
+    // sending it for the whole session, so a sale that happens a few clicks
+    // later still attributes back to Instagram/TikTok/etc.
+    let utm = { utmSource: "", utmMedium: "", utmCampaign: "" };
+    try {
+      const stored = sessionStorage.getItem("hd_utm");
+      if (stored) {
+        utm = JSON.parse(stored);
+      } else {
+        const p = new URLSearchParams(window.location.search);
+        utm = {
+          utmSource: p.get("utm_source") || "",
+          utmMedium: p.get("utm_medium") || "",
+          utmCampaign: p.get("utm_campaign") || "",
+        };
+        if (utm.utmSource || utm.utmMedium || utm.utmCampaign) {
+          sessionStorage.setItem("hd_utm", JSON.stringify(utm));
+        }
+      }
+    } catch {
+      /* ignore */
+    }
+
     const payload = JSON.stringify({
       path: pathname,
       referrer: document.referrer || "",
       sessionId: getSessionId(),
-      utmSource: params.get("utm_source") || "",
-      utmMedium: params.get("utm_medium") || "",
-      utmCampaign: params.get("utm_campaign") || "",
+      ...utm,
     });
 
     // Prefer sendBeacon so it survives navigation; fall back to fetch.

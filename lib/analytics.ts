@@ -28,6 +28,61 @@ export interface PurchaseRow {
   amount_cents: number | null;
 }
 
+export interface EventRow {
+  created_at: string;
+  event: string;
+  email: string | null;
+  path: string | null;
+  label: string | null;
+  amount_cents: number | null;
+  channel: string | null;
+  utm_campaign: string | null;
+  device: string | null;
+  browser: string | null;
+  country: string | null;
+  referrer: string | null;
+}
+
+export async function getEvents(
+  filter: string,
+  value: string | null,
+  days: number,
+  limit = 200
+): Promise<EventRow[]> {
+  const supabase = getServerClient();
+  if (!supabase) {
+    const now = Date.UTC(2026, 5, 29, 14);
+    return [
+      { created_at: new Date(now - 3600000).toISOString(), event: "purchase", email: "buyer1@example.com", path: "/account", label: "Best value", amount_cents: 10000, channel: "Organic Search", utm_campaign: null, device: "Desktop", browser: "Chrome", country: "US", referrer: "https://www.google.com/" },
+      { created_at: new Date(now - 7200000).toISOString(), event: "pageview", email: null, path: "/search", label: null, amount_cents: null, channel: "Direct", utm_campaign: null, device: "Mobile", browser: "Safari", country: "US", referrer: null },
+    ];
+  }
+  const { data, error } = await supabase.rpc("analytics_events", {
+    p_filter: filter,
+    p_value: value,
+    p_days: days,
+    p_limit: limit,
+  });
+  if (error) {
+    console.error("analytics_events failed:", error.message);
+    return [];
+  }
+  return (data ?? []).map((r: any) => ({
+    created_at: r.created_at,
+    event: r.event,
+    email: r.email,
+    path: r.path,
+    label: r.label,
+    amount_cents: r.amount_cents === null ? null : Number(r.amount_cents),
+    channel: r.channel,
+    utm_campaign: r.utm_campaign,
+    device: r.device,
+    browser: r.browser,
+    country: r.country,
+    referrer: r.referrer,
+  }));
+}
+
 export interface DailyPoint {
   day: string;
   views: number;

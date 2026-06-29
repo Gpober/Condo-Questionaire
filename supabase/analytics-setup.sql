@@ -358,3 +358,48 @@ end;
 $$;
 
 grant execute on function public.analytics_top_browsers(integer, integer) to authenticated;
+
+-- Drill-down: raw events filtered by a metric, powering the detail page.
+create or replace function public.analytics_events(
+  p_filter text,
+  p_value text default null,
+  p_days integer default 30,
+  p_limit integer default 200
+)
+returns table (
+  created_at timestamptz, event text, email text, path text, label text,
+  amount_cents integer, channel text, utm_campaign text, device text, browser text,
+  country text, referrer text
+)
+language plpgsql stable security definer set search_path = public
+as $$
+declare
+  since timestamptz := now() - make_interval(days => greatest(p_days, 1));
+begin
+  if not public.is_admin() then raise exception 'not authorized'; end if;
+  return query
+  select pv.created_at, pv.event, p.email, pv.path, pv.label, pv.amount_cents,
+         pv.channel, pv.utm_campaign, pv.device, pv.browser, pv.country, pv.referrer
+  from page_views pv
+  left join profiles p on p.id = pv.user_id
+  where pv.created_at >= since
+    and case p_filter
+      when 'purchase' then pv.event = 'purchase'
+      when 'refund'   then pv.event = 'refund'
+      when 'pageview' then pv.event = 'pageview'
+      when 'channel'  then coalesce(nullif(pv.channel, ''), 'Direct') = p_value
+      when 'campaign' then coalesce(nullif(pv.utm_campaign, ''), '(none)') = p_value
+      when 'pack'     then pv.event = 'purchase' and coalesce(pv.label, '(unknown)') = p_value
+      when 'path'     then pv.event = 'pageview' and coalesce(pv.path, '(unknown)') = p_value
+      when 'country'  then pv.event = 'pageview' and coalesce(nullif(pv.country, ''), '(unknown)') = p_value
+      when 'device'   then pv.event = 'pageview' and coalesce(nullif(pv.device, ''), '(unknown)') = p_value
+      when 'browser'  then pv.event = 'pageview' and coalesce(nullif(pv.browser, ''), '(unknown)') = p_value
+      when 'referrer' then pv.event = 'pageview' and coalesce(nullif(pv.referrer, ''), '(direct)') = p_value
+      else true
+    end
+  order by pv.created_at desc
+  limit greatest(p_limit, 1);
+end;
+$$;
+
+grant execute on function public.analytics_events(text, text, integer, integer) to authenticated;
